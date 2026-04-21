@@ -50,15 +50,18 @@
             <div class="form-body">
                 <div class="form-group">
                     <label>성함<span class="required">*</span></label>
-                    <input class="form-input" id="input-name" type="text" placeholder="홍길동" maxlength="20" onkeypress="handleNameKeyPress(event)">
+                    <input class="form-input" id="input-name" type="text" placeholder="홍길동" maxlength="20"
+                        onkeypress="handleNameKeyPress(event)">
                 </div>
                 <div class="form-group">
                     <label>연락처<span class="required">*</span></label>
-                    <input class="form-input" id="input-phone" type="tel" placeholder="010-0000-0000" maxlength="13" onkeypress="handlePhoneKeyPress(event)">
+                    <input class="form-input" id="input-phone" type="tel" placeholder="010-0000-0000" maxlength="13"
+                        onkeypress="handlePhoneKeyPress(event)">
                 </div>
                 <div class="form-group">
                     <label>이메일<span class="required">*</span></label>
-                    <input class="form-input" id="input-email" type="email" placeholder="example@clinic.com" onkeypress="handleEmailKeyPress(event)">
+                    <input class="form-input" id="input-email" type="email" placeholder="example@clinic.com"
+                        onkeypress="handleEmailKeyPress(event)">
                 </div>
                 <div class="consent-box">
                     <div class="consent-item" onclick="toggleConsent('c1')">
@@ -176,10 +179,11 @@
             </div>
         </div>
 
-        <!-- SCREEN 6: REPORT -->
         <div class="screen" id="screen-report">
-            <div id="report-container"></div>
+            <div id="report-content"></div>
         </div>
+
+        <div id="toast"></div>
 
     </div>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
