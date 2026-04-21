@@ -834,6 +834,184 @@ function generateReport() {
 // ─────────────────────────────────────────
 // REPORT A HTML
 // ─────────────────────────────────────────
+function buildReportA(p, personaKey) {
+  const num = personaKey.replace('P', '');
+  const imgPath = `images/persona_a${num}.png`;
+
+  return `
+  <div class="report-hero">
+    <div class="report-type">개원 DNA 진단 리포트</div>
+    <div class="report-persona">${p.emoji} ${p.name}</div>
+    <div class="report-tagline">${p.tagline}</div>
+    <div class="report-tags">
+      ${p.tags.map(t => `<span class="report-tag">${t}</span>`).join('')}
+    </div>
+    <div class="report-img-container">
+      <img src="${imgPath}" class="report-main-img" alt="${p.name}" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="report-body">
+    <div class="report-section">
+      <div class="section-label">DNA 상세 분석</div>
+      <div class="section-title">귀원의 개원 DNA 유형</div>
+      <div class="section-body">${p.dna}</div>
+    </div>
+    <div class="report-section">
+      <div class="section-label">입지 · 타겟 전략</div>
+      <div class="section-title">최적 입지 및 환자 전략</div>
+      <div class="section-body">${p.strategy.replace(/\n/g, '<br>')}</div>
+    </div>
+    <div class="report-section">
+      <div class="section-label">초기 마케팅 로드맵</div>
+      <div class="section-title">6개월 마케팅 실행 계획</div>
+      <div class="section-body">${p.marketing.replace(/\n/g, '<br>')}</div>
+      <div class="highlight-box">핵심 전략: 처음 3개월은 네이버 플레이스와 블로그 SEO에 집중하세요. 광고보다 유기적 신뢰가 먼저입니다.</div>
+    </div>
+    <div class="report-section">
+      <div class="section-label">리스크 제언</div>
+      <div class="section-title">주의해야 할 경영 리스크</div>
+      <div class="section-body">${p.risk}</div>
+      <div class="risk-box">한가온컴퍼니의 전문 컨설턴트가 귀원의 개원 전략을 1:1로 정밀 설계해 드립니다.</div>
+    </div>
+    <div class="report-divider"></div>
+  </div>
+  <div class="report-footer">
+    <button class="save-btn" onclick="saveReport()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      진단 리포트 이미지 저장
+    </button>
+    <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
+  </div>`;
+}
+
+// ─────────────────────────────────────────
+// REPORT B HTML
+// ─────────────────────────────────────────
+function buildReportB(avgScores, weakTwo, eff, rx) {
+  const effInfo = efficiencyText[eff];
+
+  // Radar SVG
+  const cx = 130, cy = 130, r = 90;
+  const pts = areasB.map((a, i) => {
+    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    const sc = avgScores[a];
+    const ratio = sc / 5;
+    return { x: cx + Math.cos(angle) * r * ratio, y: cy + Math.sin(angle) * r * ratio, label: a, score: sc };
+  });
+  const gridPts = (ratio) => areasB.map((a, i) => {
+    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    return `${cx + Math.cos(angle) * r * ratio},${cy + Math.sin(angle) * r * ratio}`;
+  }).join(' ');
+  const labelPts = areasB.map((a, i) => {
+    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    return { x: cx + Math.cos(angle) * (r + 22), y: cy + Math.sin(angle) * (r + 22), label: a };
+  });
+  const dataPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+
+  const radarSVG = `
+  <svg viewBox="0 0 260 260" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="${gridPts(1)}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <polygon points="${gridPts(0.8)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <polygon points="${gridPts(0.6)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <polygon points="${gridPts(0.4)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <polygon points="${gridPts(0.2)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    ${areasB.map((a, i) => {
+    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    return `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(angle) * r}" y2="${cy + Math.sin(angle) * r}" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>`;
+  }).join('')}
+    <path d="${dataPath}" fill="rgba(78,205,196,0.15)" stroke="#4ECDC4" stroke-width="2"/>
+    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#4ECDC4"/>`).join('')}
+    ${labelPts.map(p => `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#9CA8BC" font-family="Noto Sans KR">${p.label}</text>`).join('')}
+  </svg>`;
+
+  const barColors = {
+    high: '#4ECDC4',
+    mid: '#C9A96E',
+    low: '#E8826B'
+  };
+
+  const scoreItems = areasB.map(a => {
+    const sc = avgScores[a];
+    const pct = (sc / 5) * 100;
+    const color = sc >= 4 ? barColors.high : sc >= 2.5 ? barColors.mid : barColors.low;
+    const isWeak = weakTwo.includes(a);
+    return `
+    <div class="score-item">
+      <div class="score-header">
+        <span class="score-name">${a}${isWeak ? ' ⚠️' : ''}</span>
+        <span class="score-val">${sc.toFixed(1)} / 5.0</span>
+      </div>
+      <div class="score-track"><div class="score-bar" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  }).join('');
+
+  const rxSteps = rx.steps.map((s, i) => `
+    <div class="rx-step">
+      <div class="rx-num">${i + 1}</div>
+      <div class="rx-content">
+        <div class="rx-title">${s.title}</div>
+        <div class="rx-desc">${s.desc}</div>
+      </div>
+    </div>`).join('');
+
+  const revenueLabel = { r1: '3천만원 미만', r2: '3천~5천만원', r3: '5천~8천만원', r4: '8천만원 이상' };
+  const visitorsLabel = { v1: '20명 미만', v2: '20~40명', v3: '40~60명', v4: '60명 이상' };
+
+  return `
+  <div class="report-hero">
+    <div class="report-type">경영 밸런스 진단 리포트</div>
+    <div class="report-persona">📊 ${state.name} 원장님의 경영 진단</div>
+    <div class="report-tagline">6개 핵심 영역 종합 분석 결과</div>
+    <div class="report-tags">
+      <span class="report-tag">월매출 ${revenueLabel[state.bMetrics.revenue] || '-'}</span>
+      <span class="report-tag">일 내원 ${visitorsLabel[state.bMetrics.visitors] || '-'}</span>
+      <span class="report-tag">목표 ${state.bMetrics.goal || '미입력'}</span>
+    </div>
+  </div>
+  <div class="report-body">
+
+    <div class="report-section">
+      <div class="section-label">운영 효율 진단</div>
+      <div class="section-title">매출 대비 운영 효율 분석</div>
+      <div class="efficiency-badge ${effInfo.color}">${effInfo.icon} ${effInfo.badge}</div>
+      <div class="section-body">${effInfo.comment}</div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-label">방사형 밸런스 차트</div>
+      <div class="section-title">6개 영역 경영 레이더</div>
+      <div class="radar-wrap">${radarSVG}</div>
+      <div class="score-list">${scoreItems}</div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-label">취약 영역 정밀 분석</div>
+      <div class="section-title">⚠️ ${weakTwo.join(' · ')} 영역 집중 진단</div>
+      <div class="section-body">${rx.desc}</div>
+      <div class="risk-box">이 두 영역의 점수가 전체 평균을 하회하며, 경영 성과에 가장 직접적인 영향을 미치고 있습니다.</div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-label">3단계 개선 솔루션</div>
+      <div class="section-title">${rx.title}</div>
+      <div class="rx-card">${rxSteps}</div>
+      <div class="highlight-box">6개월 내 집중 실행 시 매출 15~30% 개선이 기대됩니다. 한가온컴퍼니 전문 컨설턴트가 단계별 실행을 지원합니다.</div>
+    </div>
+    <div class="report-divider"></div>
+  </div>
+  <div class="report-footer">
+    <button class="save-btn" onclick="saveReport()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      진단 리포트 이미지 저장
+    </button>
+    <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
+  </div>`;
+}
+
+
+// ─────────────────────────────────────────
+// REPORT A HTML
+// ─────────────────────────────────────────
 function getAnswersSummaryA() {
   const labels = [
     { q: '의원 규모', map: { 'S': '소형', 'M': '중형', 'L': '대형' } },
