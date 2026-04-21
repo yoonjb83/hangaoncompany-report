@@ -198,8 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             new Chart(document.getElementById('resChart'), {
                 type: 'radar',
-                data: { labels: categories.map(c => c.toUpperCase()), datasets: [{ data: radarData, backgroundColor: 'rgba(196,161,99,0.3)', borderColor: '#C4A163', borderWidth: 2 }] },
-                options: { scales: { r: { beginAtZero: true, max: 5, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+                data: { labels: categories.map(c => c.toUpperCase()), datasets: [{ data: radarData, backgroundColor: 'rgba(37,99,235,0.15)', borderColor: '#2563EB', borderWidth: 2, pointBackgroundColor: '#2563EB' }] },
+                options: { scales: { r: { beginAtZero: true, max: 5, ticks: { display: false }, grid: { color: 'rgba(37,99,235,0.1)' }, pointLabels: { color: '#1E293B', font: { weight: '600' } } } }, plugins: { legend: { display: false } } }
             });
         }
     }
@@ -223,12 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateNav();
     };
 
-    window.setRoute = (r) => {
+    window.setRoute = (r, el) => {
         appState.route = r;
         document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-        // Find the event target correctly
-        const target = event ? event.currentTarget : null;
-        if (target) target.classList.add('selected');
+        if (el) el.classList.add('selected');
         updateNav();
     };
 
