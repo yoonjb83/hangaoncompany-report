@@ -1,187 +1,639 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>한가온컴퍼니 병의원 경영 정밀진단</title>
-    <link rel='stylesheet' href='index.css?v=1.1.4'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HANGAON COMPANY | 병의원 경영 지능형 진단</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0A192F;
+            --secondary: #C4A163;
+            /* Refined Sand/Gold */
+            --bg-deep: #F8F9FB;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --white: #ffffff;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--primary);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Mobile Container (9:19 style) */
+        #app {
+            background-color: var(--bg-deep);
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(10, 25, 47, 0.05);
+            z-index: 100;
+        }
+
+        #progressBar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.6s ease;
+        }
+
+        /* Header */
+        header {
+            padding: 30px 24px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .back-btn {
+            background: var(--white);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+            background: #f0f0f0;
+        }
+
+        .brand-logo {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px 24px 40px;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            line-height: 1.4;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-weight: 700;
+            word-break: keep-all;
+        }
+
+        .page-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* Forms */
+        .field-group {
+            margin-bottom: 24px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input.modern-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--white);
+            border: 1.5px solid rgba(0, 0, 0, 0.04);
+            border-radius: 16px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        input.modern-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 8px 30px rgba(10, 25, 47, 0.08);
+        }
+
+        /* Custom Checkbox */
+        .check-pill {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--white);
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 12px;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            transition: var(--transition);
+        }
+
+        .check-pill.checked {
+            border-color: var(--secondary);
+            background: #fffdf9;
+        }
+
+        .custom-check-box {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .check-pill.checked .custom-check-box {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .custom-check-box i {
+            color: white;
+            font-size: 0.7rem;
+            display: none;
+        }
+
+        .check-pill.checked .custom-check-box i {
+            display: block;
+        }
+
+        .check-pill-text b {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .check-pill-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* Branch Selection */
+        .option-card-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .option-card {
+            background: var(--white);
+            padding: 30px 24px;
+            border-radius: 24px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .option-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+        }
+
+        .option-card .icon-label {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .option-card h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .option-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Survey Options */
+        .survey-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .survey-btn-option {
+            background: var(--white);
+            padding: 20px 24px;
+            border-radius: 18px;
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .survey-btn-option.selected {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(1.02);
+        }
+
+        /* Rating Scale */
+        .premium-scale-box {
+            background: var(--white);
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .rating-btns-wrap {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scale-btn {
+            flex: 1;
+            height: 56px;
+            border: 1.5px solid #eee;
+            background: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .scale-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(10, 25, 47, 0.2);
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Result Layout */
+        .result-stage {
+            height: 100%;
+            overflow-y: auto;
+            background: var(--bg-deep);
+        }
+
+        .result-hero {
+            height: 380px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 24px;
+            color: white;
+        }
+
+        .result-hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .result-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, rgba(4, 13, 26, 1) 0%, rgba(4, 13, 26, 0.3) 100%);
+            z-index: 2;
+        }
+
+        .result-badge {
+            background: var(--secondary);
+            color: white;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            width: fit-content;
+            margin-bottom: 12px;
+            z-index: 3;
+            position: relative;
+        }
+
+        .result-hero h2 {
+            color: white;
+            font-size: 1.9rem;
+            z-index: 3;
+            position: relative;
+            margin-bottom: 0;
+        }
+
+        .report-grid {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .report-bubble {
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .bubble-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bubble-title i {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .bubble-body {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #444;
+            word-break: keep-all;
+        }
+
+        #chartWrapper {
+            background: white;
+            padding: 24px;
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.03);
+            z-index: 100;
+        }
+
+        .main-cta {
+            width: 100%;
+            height: 64px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: var(--transition);
+        }
+
+        .main-cta.ready {
+            opacity: 1;
+            background: var(--primary);
+            box-shadow: 0 10px 30px rgba(10, 25, 47, 0.2);
+        }
+
+        .main-cta:active {
+            transform: scale(0.97);
+        }
+    </style>
 </head>
 
 <body>
+
     <div id="app">
-
-        <!-- SCREEN 1: SPLASH -->
-        <div class="screen active" id="screen-splash">
-            <div class="bg-pattern"></div>
-            <div class="bg-grid"></div>
-            <div class="splash-logo">
-                <div class="brand">한가온컴퍼니 × KMEX 2026</div>
-                <div class="title">병의원 경영<br>입체 정밀진단</div>
-                <div class="subtitle">Clinic Business Intelligence Diagnosis</div>
-            </div>
-            <div class="splash-divider"></div>
-            <div class="splash-badges">
-                <span class="badge">개원 DNA 진단</span>
-                <span class="badge">경영 밸런스 진단</span>
-                <span class="badge">맞춤 처방 리포트</span>
-            </div>
-            <div class="splash-desc">
-                귀원의 경영 현황을 정밀 분석하여<br>
-                전문가 수준의 맞춤형 진단 리포트를<br>
-                즉시 제공해 드립니다.
-            </div>
-            <button class="btn-primary" onclick="goToForm()">진단 시작하기</button>
+        <div class="progress-track">
+            <div id="progressBar"></div>
         </div>
 
-        <!-- SCREEN 2: FORM -->
-        <div class="screen" id="screen-form">
-            <div class="bg-pattern"></div>
-            <button class="back-btn" onclick="goToScreen('screen-splash')">
-                <svg viewBox="0 0 24 24" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg>
-            </button>
-            <div class="form-header">
-                <div class="form-label">기본 정보 입력</div>
-                <div class="form-title">먼저 간단한 정보를<br>입력해 주세요</div>
-                <div class="form-sub">수집된 정보는 진단 리포트 발송 외<br>다른 용도로 사용되지 않습니다.</div>
-            </div>
-            <div class="form-body">
-                <div class="form-group">
-                    <label>성함<span class="required">*</span></label>
-                    <input class="form-input" id="input-name" type="text" placeholder="홍길동" maxlength="20"
-                        onkeypress="handleNameKeyPress(event)">
+        <header>
+            <div id="backAction" class="back-btn" style="visibility: hidden;"><i class="fas fa-arrow-left"></i></div>
+            <div class="brand-logo">Hangaon Company</div>
+            <div style="width: 44px;"></div>
+        </header>
+
+        <main id="viewPort">
+
+            <!-- 1. Intro/Info -->
+            <div id="stepInfo" class="page active">
+                <h2>완벽한 개원을 위한<br>입체 경영 진단</h2>
+                <p class="page-desc">정확한 리포트 전송을 위해<br>기초 정보를 입력해 주세요.</p>
+
+                <div class="field-group">
+                    <span class="field-label">성함</span>
+                    <input type="text" id="inName" class="modern-input" placeholder="성함을 입력하세요">
                 </div>
-                <div class="form-group">
-                    <label>연락처<span class="required">*</span></label>
-                    <input class="form-input" id="input-phone" type="tel" placeholder="010-0000-0000" maxlength="13">
+                <div class="field-group">
+                    <span class="field-label">연락처</span>
+                    <input type="tel" id="inPhone" class="modern-input" placeholder="010-0000-0000">
                 </div>
-                <div class="form-group">
-                    <label>이메일<span class="required">*</span></label>
-                    <input class="form-input" id="input-email" type="email" placeholder="example@clinic.com"
-                        onkeypress="handleEmailKeyPress(event)">
-                </div>
-                <div class="consent-box">
-                    <div class="consent-item" onclick="toggleConsent('c1')">
-                        <div class="consent-checkbox" id="c1"></div>
-                        <div class="consent-text"><strong>[필수]</strong> 개인정보 수집 및 이용에 동의합니다. 수집 항목: 성명, 연락처, 이메일 / 보유기간:
-                            1년</div>
+
+                <div class="check-pill" onclick="toggleLegal('agree1')">
+                    <input type="checkbox" id="agree1" style="display:none">
+                    <div class="custom-check-box"><i class="fas fa-check"></i></div>
+                    <div class="check-pill-text">
+                        <b>개인정보 수집 및 이용 동의 (필수)</b>
+                        <span>진단 리포트 제공 및 상담 목적 / 1년 보유 후 파기</span>
                     </div>
-                    <div class="consent-item" onclick="toggleConsent('c2')">
-                        <div class="consent-checkbox" id="c2"></div>
-                        <div class="consent-text"><strong>[선택]</strong> 마케팅 목적 활용 및 경영 정보 수신에 동의합니다.</div>
+                </div>
+
+                <div class="check-pill" onclick="toggleLegal('agree2')">
+                    <input type="checkbox" id="agree2" style="display:none">
+                    <div class="custom-check-box"><i class="fas fa-check"></i></div>
+                    <div class="check-pill-text">
+                        <b>마케팅 활용 동의 (선택)</b>
+                        <span>한가온컴퍼니 신규 경영 솔루션 및 이벤트 안내</span>
                     </div>
                 </div>
             </div>
-            <div class="bottom-action">
-                <button class="btn-primary" onclick="submitForm()">다음 단계로</button>
-            </div>
-        </div>
 
-        <!-- SCREEN 3: BRANCH -->
-        <div class="screen" id="screen-branch">
-            <div class="bg-pattern"></div>
-            <div class="bg-grid"></div>
-            <button class="back-btn" onclick="goToScreen('screen-form')">
-                <svg viewBox="0 0 24 24" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg>
-            </button>
-            <div class="branch-header">
-                <div class="step-label">경영 상태 선택</div>
-                <h2>현재 상황을<br>선택해 주세요</h2>
-                <p>선택하신 경로에 맞는<br>맞춤형 진단을 진행합니다.</p>
-            </div>
-            <div class="branch-cards">
-                <div class="branch-card route-a" onclick="startRouteA()">
-                    <span class="card-icon">🌱</span>
-                    <div class="card-title">개원 예정</div>
-                    <div class="card-desc">아직 개원하지 않았거나 개원을 준비 중인 원장님을 위한 <strong>개원 DNA 진단</strong>입니다.</div>
-                    <div class="card-meta">
-                        <span class="meta-tag">9문항</span>
-                        <span class="meta-tag">약 5분 소요</span>
-                        <span class="meta-tag">12가지 페르소나</span>
+            <!-- 2. Branch -->
+            <div id="stepBranch" class="page">
+                <h2>원장님의 현재 상태를<br>선택해 주세요.</h2>
+                <p class="page-desc">분석 알고리즘이 맞춤형 진단을 시작합니다.</p>
+
+                <div class="option-card-grid">
+                    <div class="option-card" onclick="setRoute('routeA')">
+                        <div class="icon-label"><i class="fas fa-rocket"></i></div>
+                        <div class="txt">
+                            <h3>개원 예정</h3>
+                            <p>입지, 규모, 진료모델 선호도 분석</p>
+                        </div>
                     </div>
-                    <div class="card-arrow">→</div>
-                </div>
-                <div class="branch-card route-b" onclick="startRouteB()">
-                    <span class="card-icon">🏥</span>
-                    <div class="card-title">기기개원 운영 중</div>
-                    <div class="card-desc">현재 한의원을 운영 중인 원장님을 위한 <strong>경영 밸런스 진단</strong>입니다.</div>
-                    <div class="card-meta">
-                        <span class="meta-tag">21문항</span>
-                        <span class="meta-tag">약 8분 소요</span>
-                        <span class="meta-tag">15가지 처방</span>
+                    <div class="option-card" onclick="setRoute('routeB')">
+                        <div class="icon-label"><i class="fas fa-chart-line"></i></div>
+                        <div class="txt">
+                            <h3>이미 개원</h3>
+                            <p>6개 경영 지표 밸런스 데이터 분석</p>
+                        </div>
                     </div>
-                    <div class="card-arrow">→</div>
                 </div>
             </div>
-        </div>
 
-        <!-- SCREEN 4: QUESTION -->
-        <div class="screen" id="screen-question">
-            <div class="bg-pattern"></div>
-            <button class="back-btn" id="q-back-btn" onclick="goBackQuestion()">
-                <svg viewBox="0 0 24 24" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg>
-            </button>
-            <div class="progress-bar" id="q-progress-bar">
-                <div class="progress-track">
-                    <div class="progress-fill" id="q-progress-fill" style="width:0%"></div>
+            <!-- 3. Dynamic Question Page -->
+            <div id="stepQuestion" class="page">
+                <div style="margin-bottom: 30px;">
+                    <span id="labelArea"
+                        style="font-size:0.8rem; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:1px;">Category</span>
+                    <h2 id="txtQuestion" style="margin-top:10px;">질문을 불러오는 중입니다.</h2>
                 </div>
-                <div class="progress-text">
-                    <span id="q-progress-label">진단 중</span>
-                    <span id="q-progress-fraction">0 / 0</span>
+                <div id="dynamicOptions">
+                    <!-- Options go here -->
                 </div>
             </div>
-            <div class="question-header">
-                <div class="q-meta">
-                    <span class="q-area" id="q-area-label"></span>
-                    <div class="q-dot"></div>
-                    <span class="q-num" id="q-num-label"></span>
+
+            <!-- 4. Result Page -->
+            <div id="stepResult" class="page" style="padding:0">
+                <div class="result-stage">
+                    <div class="result-hero">
+                        <img id="resImg" class="result-hero-bg" src="" alt="Persona">
+                        <div class="result-hero-overlay"></div>
+                        <div class="result-badge" id="resBadge">진단 완료</div>
+                        <h2 id="resTitle">진단 리포트</h2>
+                    </div>
+
+                    <div class="report-grid">
+                        <div id="chartView">
+                            <div id="chartWrapper">
+                                <span class="bubble-title"><i class="fas fa-chart-pie"></i> 경영 지표 밸런스</span>
+                                <canvas id="resChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="report-bubble">
+                            <span class="bubble-title"><i class="fas fa-dna"></i> <span id="lblTitle1">심층
+                                    분석</span></span>
+                            <div id="resAn" class="bubble-body">데이터를 분석 중입니다.</div>
+                        </div>
+
+                        <div class="report-bubble">
+                            <span class="bubble-title"><i class="fas fa-lightbulb"></i> <span id="lblTitle2">전략
+                                    제언</span></span>
+                            <div id="resSt" class="bubble-body">전략을 생성 중입니다.</div>
+                        </div>
+
+                        <div class="report-bubble">
+                            <span class="bubble-title"><i class="fas fa-shield-alt"></i> 한가온컴퍼니의 조력</span>
+                            <div id="resHa" class="bubble-body">맞춤형 지원 계획입니다.</div>
+                        </div>
+
+                        <!-- User specifically asked to remove buttons here -->
+                        <div style="padding: 20px 0; text-align: center;">
+                            <p style="color:var(--text-muted); font-size:0.85rem;">진단 리포트가 생성되었습니다.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="question-text" id="q-text"></div>
-                <div class="question-sub" id="q-sub"></div>
             </div>
-            <div class="options-container" id="options-container"></div>
-            <div class="bottom-action">
-                <button class="btn-primary" id="q-next-btn" onclick="nextQuestion()">다음</button>
-            </div>
-        </div>
 
-        <!-- SCREEN 5: LOADING -->
-        <div class="screen" id="screen-loading">
-            <div class="bg-pattern"></div>
-            <div class="loading-center">
-                <div class="loading-ring">
-                    <svg viewBox="0 0 80 80">
-                        <circle class="bg" cx="40" cy="40" r="34" fill="none" stroke-width="3" />
-                        <circle class="active" cx="40" cy="40" r="34" fill="none" stroke-width="3"
-                            stroke-dasharray="60 154" stroke-linecap="round" />
-                    </svg>
-                </div>
-                <div class="loading-text" id="loading-title">AI 분석 중...</div>
-                <div class="loading-sub" id="loading-sub">응답 데이터를 바탕으로<br>정밀 진단 리포트를 생성하고 있습니다.</div>
-                <div class="loading-dots">
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                </div>
-            </div>
-        </div>
+        </main>
 
-        <div class="screen" id="screen-report">
-            <div id="report-content"></div>
-        </div>
-
-        <div id="toast"></div>
-
+        <footer>
+            <button id="ctaBtn" class="main-cta">다음 단계</button>
+        </footer>
     </div>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script src='app.js?v=1.1.4'></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
