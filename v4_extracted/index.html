@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>한가온 병의원 경영 입체 진단</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00D179;
+            --bg-light: #F8FAFC;
+            --white: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --card-shadow: 0 10px 25px rgba(0, 209, 121, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-bar-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+        }
+
+        #progressBar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+            border-radius: 0 10px 10px 0;
+        }
+
+        header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-light);
+            z-index: 900;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: var(--white);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            visibility: hidden;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .page {
+            position: absolute;
+            top: 84px;
+            left: 0;
+            right: 0;
+            bottom: 120px;
+            padding: 0 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            transform: translateY(15px);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .desc {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* Form */
+        .f-box {
+            margin-bottom: 20px;
+        }
+
+        .f-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            margin-left: 4px;
+        }
+
+        .f-input {
+            width: 100%;
+            height: 60px;
+            border: 2.5px solid #EEE;
+            border-radius: 18px;
+            padding: 0 20px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            outline: none;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .f-input:focus {
+            border-color: var(--primary);
+            background: #EFFFF8;
+        }
+
+        .f-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            background: var(--white);
+            border-radius: 18px;
+            border: 2px solid transparent;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .f-check.checked {
+            background: #EFFFF8;
+            border-color: var(--primary);
+        }
+
+        .f-check-box {
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid #EEE;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 10px;
+            transition: var(--transition);
+        }
+
+        .f-check.checked .f-check-box {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Cards */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .card.selected {
+            border-color: var(--primary);
+            background: #EFFFF8;
+        }
+
+        .card i {
+            font-size: 1.4rem;
+            color: var(--primary);
+            background: rgba(0, 209, 121, 0.1);
+            padding: 12px;
+            border-radius: 14px;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Label Badge */
+        .l-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(0, 209, 121, 0.1);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* Footer Sticky & Split Buttons */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 24px 34px;
+            background: linear-gradient(to top, var(--bg-light) 70%, transparent);
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-base {
+            height: 64px;
+            border-radius: 20px;
+            border: none;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: white;
+            transition: var(--transition);
+        }
+
+        #backBtn {
+            flex: 3;
+            background: #D1D5DB;
+            color: #6B7280;
+            display: none;
+        }
+
+        #ctaBtn {
+            flex: 7;
+            background: #D1D5DB;
+            cursor: not-allowed;
+        }
+
+        #ctaBtn.ready {
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 209, 121, 0.25);
+        }
+
+        .btn-base:active {
+            transform: scale(0.98);
+        }
+
+        /* Result Specifics */
+        .res-card {
+            background: var(--white);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .res-img {
+            width: 100%;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="progress-bar-wrap">
+            <div id="progressBar"></div>
+        </div>
+
+        <header>
+            <button id="backAction" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+            <div class="logo">HANGAON COMPANY</div>
+            <div style="width:44px;"></div>
+        </header>
+
+        <!-- P1: Info -->
+        <div id="stepInfo" class="page active">
+            <h1>원장님을 위한<br>맞춤 경영 진단</h1>
+            <p class="desc">정확한 분석 리포트 전달을 위해<br>기초 정보를 입력해 주세요.</p>
+            <div class="f-box">
+                <span class="f-label">성함</span>
+                <input type="text" id="inName" class="f-input" placeholder="성함을 입력하세요" oninput="checkName(this)">
+            </div>
+            <div class="f-box">
+                <span class="f-label">연락처</span>
+                <input type="tel" id="inPhone" class="f-input" placeholder="010-0000-0000" oninput="formatPhone(this)"
+                    inputmode="numeric">
+            </div>
+            <div class="f-check" onclick="toggleLegal('agree1')">
+                <div class="f-check-box"><i class="fas fa-check"></i></div>
+                <span style="font-size:0.95rem; font-weight:700;">[필수] 개인정보 수집 및 이용 동의</span>
+                <input type="checkbox" id="agree1" style="display:none">
+            </div>
+        </div>
+
+        <!-- P2: Branch -->
+        <div id="stepBranch" class="page">
+            <h1>원장님의 현재 상태를<br>선택해 주세요.</h1>
+            <p class="desc">현재 상황에 맞는 최적화된 질문 리스트를 불러옵니다.</p>
+            <div class="card-list">
+                <div class="card" onclick="setRoute('routeA')">
+                    <i class="fas fa-rocket"></i>
+                    <div class="txt">
+                        <h3>개원 예정</h3>
+                        <p>입지, 규모, 전략 중심 분석</p>
+                    </div>
+                </div>
+                <div class="card" onclick="setRoute('routeB')">
+                    <i class="fas fa-chart-pie"></i>
+                    <div class="txt">
+                        <h3>이미 개원</h3>
+                        <p>경영 지표 조화 및 밸런스 분석</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P3: Survey -->
+        <div id="stepQuestion" class="page">
+            <span id="labelArea" class="l-badge">영역 진단</span>
+            <h1 id="txtQuestion">질문을 불러오는 중...</h1>
+            <p class="desc">가장 가깝다고 생각되는 항목을 선택하세요.</p>
+            <div id="dynamicOptions" class="card-list"></div>
+        </div>
+
+        <!-- P4: Result -->
+        <div id="stepResult" class="page">
+            <!-- Results injected here -->
+        </div>
+
+        <div class="footer">
+            <button id="backBtn" class="btn-base" onclick="goBack()">이전</button>
+            <button id="ctaBtn" class="btn-base" onclick="nextAction()">다음으로</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
