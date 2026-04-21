@@ -1,4 +1,4 @@
-﻿// v1.1.2 - 2026-04-21 18:33
+﻿// v1.1.4 - 2026-04-21 18:48
 window.onerror = function (msg, url, line) {
   const t = document.getElementById('toast');
   if (t) {
@@ -12,7 +12,7 @@ window.onerror = function (msg, url, line) {
 const state = {
   name: '', phone: '', email: '',
   consent1: false, consent2: false,
-  route: null, // 'A' | 'B'
+  route: null,
   answers: [],
   currentQ: 0,
   bMetrics: { revenue: '', visitors: '', goal: '' }
@@ -125,12 +125,9 @@ const questionsB_scale = [
   { area: '비전', areaKey: '비전', num: '21 / 21', text: '퍼스널 브랜딩 연계 전략이 있습니까?' }
 ];
 
-// ─────────────────────────────────────────
-// PERSONA DATA
-// ─────────────────────────────────────────
 const personaData = {
-  P1: { name: '도심형 하이엔드 마스터', emoji: '🏙️', tagline: '도시의 정점에서 만나는 프리미엄 진료의 기준', tags: ['시스템형', '도심', '비급여 특화'], dna: '귀원은 고도의 시스템화된 진료와 도심 중심가의 지리적 이점을 결합하여 고부가가치 비급여 진료를 선도하는 유형입니다.', strategy: '현대식 빌딩 상권에 위치하여 스마트 기기를 활용한 정밀 진단 시스템을 구축하세요. 하이엔드 브랜딩이 필수입니다.', marketing: '그린과 화이트 톤의 세련된 디자인으로 사이트를 구성하고, 타겟팅 광고를 통해 전문성을 강조하세요.', risk: '높은 고정비 관리가 중요합니다. 최고급 고객 경험 설계를 통해 객단가를 방어하세요.' },
-  P2: { name: '동네 주치의 휴먼 가이드', emoji: '🏠', tagline: '이웃의 건강을 지키는 따뜻한 소통의 공간', tags: ['원장중심', '거주지', '보험일반'], dna: '원장님 개인의 신뢰도를 바탕으로 거주 밀착형 상권에서 안정적인 진료를 제공하는 동네 거점 유형입니다.', strategy: '대화 중심의 아늑한 진료 환경을 조성하세요. 지역 커뮤니티의 신뢰가 매출 원동력입니다.', marketing: '편안한 색감을 활용하고 당근마켓 등 지역 밀착형 소통 채널에 집중하세요.', risk: '낮은 객단가를 보완하기 위한 진료 효율성 향상과 소통의 균형이 중요합니다.' },
+  P1: { name: '도심형 하이엔드 마스터', emoji: '🏙️', tagline: '도시의 정점에서 만나는 프리미엄 진료의 기준', tags: ['시스템형', '도심', '비급여 특화'], dna: '귀원은 고도의 시스템화된 진료와 도심 중심가의 지리적 이점을 결합하여 고부가가치 비급여 진료를 선도하는 유형입니다.', strategy: '현대식 빌딩 상권에 위치하여 스마트 기기를 활용한 정밀 진단 시스템을 구축하세요.', marketing: '그린 톤의 세련된 디자인으로 사이트를 구성하고 타겟팅 광고에 집중하세요.', risk: '높은 고정비 관리가 중요하며, 최고급 고객 경험 설계를 통해 객단가를 방어하세요.' },
+  P2: { name: '동네 주치의 휴먼 가이드', emoji: '🏠', tagline: '이웃의 건강을 지키는 따뜻한 소통의 공간', tags: ['원장중심', '거주지', '보험일반'], dna: '원장님 개인의 신뢰도를 바탕으로 거주 밀착형 상권에서 안정적인 진료를 제공하는 동네 거점 유형입니다.', strategy: '대화 중심의 아늑한 진료 환경을 조성하세요. 지역 커뮤니티 신뢰가 핵심입니다.', marketing: '편안한 색감을 활용하고 지역 커뮤니티(맘카페 등)와 소통하세요.', risk: '낮은 객단가 보완을 위한 진료 효율성 향상과 소통의 균형이 중요합니다.' },
   P3: { name: '광역 거점 시스템 병원가', emoji: '🏥', tagline: '체계적인 의료 시스템으로 지역을 선도하는 병원', tags: ['시스템형', '거주지', '비급여 특화'], dna: '대형 시설과 다수의 의료진이 체계적으로 움직이는 대규모 지역 거점 메디컬 센터 유형입니다.', strategy: '입원실 운영과 협진 시스템을 강화하세요. 대형 로비와 최신 장비로 전문성을 시각화해야 합니다.', marketing: '신뢰감 있는 디자인과 광역 검색 광고, 인근 의원 네트워크 구축에 힘쓰세요.', risk: '복잡한 조직 관리 비용이 높으므로 표준 매뉴얼과 인사 시스템 도입이 필수입니다.' },
   P4: { name: '오피스 타켓 쾌속 클리닉', emoji: '⌚', tagline: '직장인의 시간을 아껴주는 효율적 솔루션', tags: ['원장중심', '도심', '보험일반'], dna: '도심 오피스 상권에서 바쁜 직장인들을 위해 빠르고 정확한 진료를 제공하는 속도 중심 모델입니다.', strategy: '예약 시스템 최적화와 점심/퇴근 시간 연장 운영 등 타켓 맞춤형 운영이 필요합니다.', marketing: '에너제틱한 컬러를 활용하고 카카오톡 예약 등 디지털 접근성을 극대화하세요.', risk: '이탈 방지를 위한 CRM과 신속한 치료 후 팔로업 안내가 수익 유지의 핵심입니다.' },
   P5: { name: '네트워크 브랜딩 전문가', emoji: '🌐', tagline: '통일된 매뉴얼로 구현하는 시스템 경영의 정석', tags: ['시스템형', '도심', '보험일반'], dna: '일관된 매뉴얼과 강력한 브랜드 인지도를 가진 브랜드 지향형 모델입니다.', strategy: '지점 간 진료 경험 편차를 없애는 브랜딩 가이드를 수립하세요. 브랜드 이미지가 핵심 자산입니다.', marketing: '안정적 브랜딩으로 통합 마케팅을 실행하고 유튜브 등 대형 플랫폼 노출을 강화하세요.', risk: '브랜드 가이드라인 준수와 주기적인 품질 관리(QC)가 가장 중요한 과제입니다.' },
@@ -174,9 +171,6 @@ const personasLogic = {
   }
 };
 
-// ─────────────────────────────────────────
-// PRESCRIPTION DATA (Route B)
-// ─────────────────────────────────────────
 const prescriptionData = {
   'CS+마케팅': { title: 'CS·마케팅 동시 강화 처방', desc: '유입과 응대 시스템이 모두 미흡합니다. 마케팅 집출 전에 응대 매뉴얼부터 확립해야 광고비 낭비를 막을 수 있습니다.', steps: [{ title: 'CS 구축', desc: '응대 스크립트 제작 및 직원 교육' }, { title: '채널 정비', desc: '플레이스 최적화 및 블로그 체계화' }, { title: '통합 캠페인', desc: 'CS 기반 신환 유입 광고 집행' }] },
   'default': { title: '종합 경영 시스템 강화 처방', desc: '전 영역의 균형적 성장이 필요합니다. 우선순위 영역을 정해 3개월 단위로 집중 개선하세요.', steps: [{ title: '현황 진단', desc: '영역별 지표 수치화 및 타겟 설정' }, { title: '집중 개선', desc: '취약 영역 프로토콜 표준화' }, { title: '시스템화', desc: '자동화 툴 도입 및 전 직원 숙지' }] }
@@ -189,30 +183,21 @@ const prescriptions = {
   }
 };
 
-// ─────────────────────────────────────────
-// GENERIC UTILS
-// ─────────────────────────────────────────
 let currentScreen = 'screen-splash';
 let currentQuestions = [];
 let questionIndex = 0;
 let selectedOption = null;
 
 function goToScreen(id) {
-  const current = document.getElementById(currentScreen);
   const next = document.getElementById(id);
   if (!next) {
-    console.error('Next screen not found:', id);
+    console.error('Screen not found:', id);
     return;
   }
-  if (current) {
-    current.classList.remove('active');
-  } else {
-    console.warn('Current screen not found:', currentScreen);
-    // If current is missing, we still want to show the next one
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  }
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   next.classList.add('active');
   currentScreen = id;
+  window.scrollTo(0, 0);
 }
 
 function formatPhone(v) {
@@ -221,8 +206,6 @@ function formatPhone(v) {
   if (d.length <= 7) return d.slice(0, 3) + '-' + d.slice(3);
   return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7, 11);
 }
-
-document.getElementById('input-phone').addEventListener('input', function () { this.value = formatPhone(this.value); });
 
 function handleNameKeyPress(e) { if (e.key === 'Enter') document.getElementById('input-phone').focus(); }
 function handlePhoneKeyPress(e) { if (e.key === 'Enter') document.getElementById('input-email').focus(); }
@@ -281,7 +264,7 @@ function renderQuestion() {
   const total = currentQuestions.length;
   document.getElementById('q-progress-fill').style.width = (questionIndex / total * 100) + '%';
   document.getElementById('q-progress-label').textContent = state.route === 'A' ? '개원 DNA 진단' : '경영 밸런스 진단';
-  document.getElementById('q-progress-fraction').textContent = `${questionIndex + 1} / ${total}`;
+  document.getElementById('q-progress-fraction').textContent = (questionIndex + 1) + ' / ' + total;
   document.getElementById('q-area-label').textContent = q.area;
   document.getElementById('q-num-label').textContent = q.num;
   document.getElementById('q-text').textContent = q.text;
@@ -294,7 +277,7 @@ function renderQuestion() {
     q.options.forEach(opt => {
       const div = document.createElement('div');
       div.className = 'option-item';
-      div.innerHTML = `<div class="option-dot"></div><div class="option-content"><div class="option-label">${opt.label}</div>${opt.desc ? `<div class="option-desc">${opt.desc}</div>` : ''}</div>`;
+      div.innerHTML = '<div class="option-dot"></div><div class="option-content"><div class="option-label">' + opt.label + '</div>' + (opt.desc ? '<div class="option-desc">' + opt.desc + '</div>' : '') + '</div>';
       div.onclick = () => { selectedOption = opt.val; nextQuestion(); };
       container.appendChild(div);
     });
@@ -304,7 +287,7 @@ function renderQuestion() {
     for (let s = 1; s <= 5; s++) {
       const btn = document.createElement('div');
       btn.className = 'scale-btn';
-      btn.innerHTML = `<div class="scale-num">${s}</div>`;
+      btn.innerHTML = '<div class="scale-num">' + s + '</div>';
       btn.onclick = () => { selectedOption = s; nextQuestion(); };
       row.appendChild(btn);
     }
@@ -350,11 +333,15 @@ function generateReport() {
     const scaleAnswers = state.answers.slice(3);
     const scores = {};
     areasB.forEach(a => scores[a] = []);
-    questionsB_scale.forEach((q, i) => scores[q.areaKey].push(Number(scaleAnswers[i]) || 3));
+    questionsB_scale.forEach((q, i) => {
+      const ak = q.areaKey;
+      if (!scores[ak]) scores[ak] = [];
+      scores[ak].push(Number(scaleAnswers[i]) || 3);
+    });
     const avgScores = {};
     areasB.forEach(a => {
       const arr = scores[a];
-      avgScores[a] = arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 3;
+      avgScores[a] = arr && arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 3;
     });
     const sorted = areasB.slice().sort((a, b) => avgScores[a] - avgScores[b]);
     const weakTwo = [sorted[0], sorted[1]];
@@ -365,92 +352,47 @@ function generateReport() {
 }
 
 function buildReportA(p) {
-  return `
-  <div class="report-container" id="report-container">
-    <div class="report-header">
-      <div class="report-title">개원 DNA 진단 리포트</div>
-      <div class="report-persona">${p.emoji} ${p.name}</div>
-      <div class="report-tagline">${p.tagline}</div>
-    </div>
-    <div class="report-body">
-      <div class="report-section">
-        <div class="section-title">DNA 상세 분석</div>
-        <div class="analysis-box"><p>${p.dna}</p></div>
-      </div>
-      <div class="report-section">
-        <div class="section-title">입지 및 타겟 전략</div>
-        <div class="analysis-box"><p>${p.strategy}</p></div>
-      </div>
-      <div class="report-section">
-        <div class="section-title">마케팅 제언</div>
-        <div class="highlight-box"><p>${p.marketing}</p></div>
-      </div>
-      <div class="report-section">
-        <div class="section-title">경영 리스크 관리</div>
-        <div class="risk-box"><p>${p.risk}</p></div>
-      </div>
-      <div class="next-step-box">
-        <strong>NEXT STEP:</strong><br>
-        한가온컴퍼니 전문가와의 1:1 상담을 통해 구체적인 개원 로드맵을 설계해 보세요.
-      </div>
-    </div>
-    <div class="report-footer-actions">
-      <button class="save-btn" onclick="saveReport()">이미지 저장</button>
-      <button class="restart-btn" onclick="location.reload()">다시 하기</button>
-    </div>
-  </div>`;
+  return '<div class="report-container" id="report-container"><div class="report-header"><div class="report-title">개원 DNA 진단 리포트</div><div class="report-persona">' + p.emoji + ' ' + p.name + '</div><div class="report-tagline">' + p.tagline + '</div></div><div class="report-body"><div class="report-section"><div class="section-title">DNA 상세 분석</div><div class="analysis-box"><p>' + p.dna + '</p></div></div><div class="report-section"><div class="section-title">입지 및 타겟 전략</div><div class="analysis-box"><p>' + p.strategy + '</p></div></div><div class="report-section"><div class="section-title">마케팅 제언</div><div class="highlight-box"><p>' + p.marketing + '</p></div></div><div class="report-section"><div class="section-title">경영 리스크 관리</div><div class="risk-box"><p>' + p.risk + '</p></div></div><div class="next-step-box"><strong>NEXT STEP:</strong><br>한가온컴퍼니 전문가와의 1:1 상담을 통해 구체적인 개원 로드맵을 설계해 보세요.</div></div><div class="report-footer-actions"><button class="save-btn" onclick="saveReport()">이미지 저장</button><button class="restart-btn" onclick="location.reload()">다시 하기</button></div></div>';
 }
 
 function buildReportB(avgScores, weakTwo, rx) {
-  const rxSteps = rx.steps.map((s, i) => `
-    <div class="rx-step">
-      <div class="rx-num">${i + 1}</div>
-      <div class="rx-content">
-        <div class="rx-title">${s.title}</div>
-        <div class="rx-desc">${s.desc}</div>
-      </div>
-    </div>`).join('');
-
-  return `
-  <div class="report-container" id="report-container">
-    <div class="report-header">
-      <div class="report-title">경영 밸런스 진단 리포트</div>
-      <div class="report-persona">📊 ${state.name} 원장님 진단 결과</div>
-    </div>
-    <div class="report-body">
-      <div class="report-section">
-        <div class="section-title">6대 영역 밸런스</div>
-        ${areasB.map(a => `<div class="score-row"><span>${a}</span><div class="bar-bg"><div class="bar-fill" style="width:${avgScores[a] * 20}%"></div></div><span>${avgScores[a].toFixed(1)}</span></div>`).join('')}
-      </div>
-      <div class="report-section">
-        <div class="section-title">⚠️ 취약 영역 정밀 분석</div>
-        <div class="analysis-box"><p>현재 <strong>${weakTwo.join(', ')}</strong> 영역의 보완이 시급한 것으로 분석되었습니다. ${rx.desc}</p></div>
-      </div>
-      <div class="report-section">
-        <div class="section-title">성장 로드맵 솔루션</div>
-        <div class="rx-card">${rxSteps}</div>
-      </div>
-      <div class="next-step-box">
-        <strong>전문가 어드바이스:</strong><br>
-        취약 영역에 대한 현장 정밀 진단과 맞춤형 시스템 구축이 필요합니다.
-      </div>
-    </div>
-    <div class="report-footer-actions">
-      <button class="save-btn" onclick="saveReport()">이미지 저장</button>
-      <button class="restart-btn" onclick="location.reload()">다시 하기</button>
-    </div>
-  </div>`;
+  const rxSteps = rx.steps.map((s, i) => '<div class="rx-step"><div class="rx-num">' + (i + 1) + '</div><div class="rx-content"><div class="rx-title">' + s.title + '</div><div class="rx-desc">' + s.desc + '</div></div></div>').join('');
+  return '<div class="report-container" id="report-container"><div class="report-header"><div class="report-title">경영 밸런스 진단 리포트</div><div class="report-persona">📊 원장님 진단 결과</div></div><div class="report-body"><div class="report-section"><div class="section-title">6대 영역 밸런스</div>' + areasB.map(a => '<div class="score-row"><span>' + a + '</span><div class="bar-bg"><div class="bar-fill" style="width:' + (avgScores[a] * 20) + '%"></div></div><span>' + avgScores[a].toFixed(1) + '</span></div>').join('') + '</div><div class="report-section"><div class="section-title">⚠️ 취약 영역 정밀 분석</div><div class="analysis-box"><p>현재 <strong>' + weakTwo.join(', ') + '</strong> 영역의 보완이 시급한 것으로 분석되었습니다. ' + rx.desc + '</p></div></div><div class="report-section"><div class="section-title">성장 로드맵 솔루션</div><div class="rx-card">' + rxSteps + '</div></div><div class="next-step-box"><strong>전문가 어드바이스:</strong><br>취약 영역에 대한 현장 정밀 진단과 맞춤형 시스템 구축이 필요합니다.</div></div><div class="report-footer-actions"><button class="save-btn" onclick="saveReport()">이미지 저장</button><button class="restart-btn" onclick="location.reload()">다시 하기</button></div></div>';
 }
 
 function saveReport() {
   const el = document.getElementById('report-container');
   if (!el) return;
   showToast('이미지 생성 중...');
-  html2canvas(el, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `진단리포트_${state.name}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-    showToast('저장 완료!');
-  });
+  if (window.html2canvas) {
+    window.html2canvas(el, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = "진단리포트.png";
+      link.href = canvas.toDataURL();
+      link.click();
+      showToast('저장 완료!');
+    });
+  } else { showToast('저장 도구 로드 중...'); }
 }
+
+const init = () => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const splash = document.getElementById('screen-splash');
+  if (splash) splash.classList.add('active');
+  const phone = document.getElementById('input-phone');
+  if (phone) phone.addEventListener('input', function () { this.value = formatPhone(this.value); });
+};
+
+window.addEventListener('load', init);
+window.goToForm = () => goToScreen('screen-form');
+window.goToScreen = goToScreen;
+window.submitForm = submitForm;
+window.toggleConsent = toggleConsent;
+window.startRouteA = startRouteA;
+window.startRouteB = startRouteB;
+window.nextQuestion = nextQuestion;
+window.goBackQuestion = goBackQuestion;
+window.saveReport = saveReport;
+window.handleNameKeyPress = handleNameKeyPress;
+window.handlePhoneKeyPress = handlePhoneKeyPress;
+window.handleEmailKeyPress = handleEmailKeyPress;
