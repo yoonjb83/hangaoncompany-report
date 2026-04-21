@@ -832,7 +832,7 @@ function generateReport() {
 }
 
 // ─────────────────────────────────────────
-// REPORT A HTML
+// REPORT A HTML (개원 예정)
 // ─────────────────────────────────────────
 function buildReportA(p, personaKey) {
   const num = personaKey.replace('P', '');
@@ -850,31 +850,96 @@ function buildReportA(p, personaKey) {
       <img src="${imgPath}" class="report-main-img" alt="${p.name}" onerror="this.style.display='none'">
     </div>
   </div>
+
   <div class="report-body">
+    <!-- 1. 귀원의 진단 응답 -->
     <div class="report-section">
-      <div class="section-label">DNA 상세 분석</div>
-      <div class="section-title">귀원의 개원 DNA 유형</div>
-      <div class="section-body">${p.dna}</div>
+      <div class="section-label">진단 데이터</div>
+      <div class="section-title">귀원의 진단 응답 요약</div>
+      ${getAnswersSummaryA()}
+      <div class="tip-box">
+        💡 선택하신 9가지 항목은 귀원의 개원 페르소나를 결정하는 핵심 DNA입니다.
+      </div>
     </div>
+
+    <!-- 2. DNA 상세 분석 -->
     <div class="report-section">
-      <div class="section-label">입지 · 타겟 전략</div>
-      <div class="section-title">최적 입지 및 환자 전략</div>
+      <div class="section-label">유형 분석</div>
+      <div class="section-title">귀원의 개원 DNA 상세</div>
+      <div class="analysis-box">
+        <div class="analysis-tags">
+          ${p.tags.map(t => `<span class="ana-tag">#${t}</span>`).join(' ')}
+        </div>
+        <p>${p.dna}</p>
+      </div>
+    </div>
+
+    <!-- 3. 입지 · 타겟 전략 -->
+    <div class="report-section">
+      <div class="section-label">전략 제언</div>
+      <div class="section-title">최적 입지 및 환자 타겟팅</div>
       <div class="section-body">${p.strategy.replace(/\n/g, '<br>')}</div>
+      <div class="tip-box">
+        <strong>💡 성공을 위한 액션 아이템:</strong>
+        <ul style="margin-top:10px; padding-left:20px;">
+          <li>해당 상권의 유동인구 시간대별 동선 재확인</li>
+          <li>핵심 타겟 환자군의 페인 포인트(Pain Point) 분석</li>
+          <li>경쟁 의원 대비 우리 의원만의 차별점(USP) 정의</li>
+        </ul>
+      </div>
     </div>
+
+    <!-- 4. 초기 마케팅 로드맵 -->
     <div class="report-section">
-      <div class="section-label">초기 마케팅 로드맵</div>
-      <div class="section-title">6개월 마케팅 실행 계획</div>
-      <div class="section-body">${p.marketing.replace(/\n/g, '<br>')}</div>
-      <div class="highlight-box">핵심 전략: 처음 3개월은 네이버 플레이스와 블로그 SEO에 집중하세요. 광고보다 유기적 신뢰가 먼저입니다.</div>
+      <div class="section-label">실행 계획</div>
+      <div class="section-title">개원 6개월 마케팅 로드맵</div>
+      <div class="timeline-box">
+        <div class="timeline-item">
+          <div class="time-label">1~2개월</div>
+          <div class="time-content">기반 구축기 (네이버 플레이스, 블로그 SEO, 인테리어 브랜딩)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">3~4개월</div>
+          <div class="time-content">초기 유입기 (SNS 타겟 광고, 지역 커뮤니티 제휴, 리뷰 관리)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">5~6개월</div>
+          <div class="time-content">안정 확장기 (CRM 강화, 추천 프로그램 운영, 노출 극대화)</div>
+        </div>
+      </div>
+      <div class="highlight-box">
+        네이버 플레이스 상위 노출과 블로그 전문 콘텐츠가 초기 신환 유입의 70%를 결정합니다.
+      </div>
     </div>
+
+    <!-- 5. 리스크 제언 & 체크리스트 -->
     <div class="report-section">
-      <div class="section-label">리스크 제언</div>
+      <div class="section-label">리스크 관리</div>
       <div class="section-title">주의해야 할 경영 리스크</div>
-      <div class="section-body">${p.risk}</div>
-      <div class="risk-box">한가온컴퍼니의 전문 컨설턴트가 귀원의 개원 전략을 1:1로 정밀 설계해 드립니다.</div>
+      <div class="section-body" style="margin-bottom:15px;">${p.risk}</div>
+      <div class="checklist-box" style="background: rgba(232,130,107,0.05); padding: 15px; border-radius: 8px; border: 1px dashed #E8826B;">
+        <div style="font-weight: 700; color: #E8826B; margin-bottom: 10px;">⚠️ 필수 관리 항목</div>
+        <div style="font-size: 13px; line-height: 1.6;">
+          □ 초기 마케팅 예산 소진 속도 조절<br>
+          □ 직원 교육 및 서비스 매뉴얼 숙지 상태<br>
+          □ 예상 매출 대비 고정비(임대료/인건비) 비중<br>
+          □ 개원 초기 환자 클레임 대응 프로세스
+        </div>
+      </div>
     </div>
+
+    <!-- 6. 다음 단계 (신규 추가) -->
+    <div class="report-section">
+      <div class="section-label">NEXT STEP</div>
+      <div class="section-title">한가온컴퍼니 전문가 지원</div>
+      <div class="next-step-box">
+        귀원의 개원 DNA에 맞춘 **1:1 정밀 컨설팅 전용 상담**을 신청하세요. 상권 분석 데이터부터 마케팅 실행 체계까지 한가온컴퍼니가 함께합니다.
+      </div>
+    </div>
+
     <div class="report-divider"></div>
   </div>
+
   <div class="report-footer">
     <button class="save-btn" onclick="saveReport()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -885,7 +950,7 @@ function buildReportA(p, personaKey) {
 }
 
 // ─────────────────────────────────────────
-// REPORT B HTML
+// REPORT B HTML (기개원 운영 중)
 // ─────────────────────────────────────────
 function buildReportB(avgScores, weakTwo, eff, rx) {
   const effInfo = efficiencyText[eff];
@@ -968,37 +1033,90 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
       <span class="report-tag">목표 ${state.bMetrics.goal || '미입력'}</span>
     </div>
   </div>
-  <div class="report-body">
 
+  <div class="report-body">
+    <!-- 1. 기본 정보 정량 분석 -->
     <div class="report-section">
-      <div class="section-label">운영 효율 진단</div>
+      <div class="section-label">경영 지표</div>
+      <div class="section-title">주요 운영 세그먼트</div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-key">월 매출 구간</div>
+          <div class="metric-val">${revenueLabel[state.bMetrics.revenue] || '확인필요'}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-key">일 내원 환자</div>
+          <div class="metric-val">${visitorsLabel[state.bMetrics.visitors] || '확인필요'}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-key">6개월 목표</div>
+          <div class="metric-val" style="font-size:16px;">${state.bMetrics.goal || '미설정'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 운영 효율 진단 -->
+    <div class="report-section">
+      <div class="section-label">수익 분석</div>
       <div class="section-title">매출 대비 운영 효율 분석</div>
       <div class="efficiency-badge ${effInfo.color}">${effInfo.icon} ${effInfo.badge}</div>
-      <div class="section-body">${effInfo.comment}</div>
+      <div class="analysis-box">
+        <p>${effInfo.comment}</p>
+      </div>
     </div>
 
+    <!-- 3. 방사형 밸런스 차트 -->
     <div class="report-section">
-      <div class="section-label">방사형 밸런스 차트</div>
-      <div class="section-title">6개 영역 경영 레이더</div>
+      <div class="section-label">영역 분석</div>
+      <div class="section-title">6개 영역 경영 레이더 차트</div>
       <div class="radar-wrap">${radarSVG}</div>
       <div class="score-list">${scoreItems}</div>
+      <div class="tip-box">
+        <strong>💡 차트 해석 가이드:</strong>
+        <div style="font-size:12px; margin-top:5px; line-height:1.6;">
+          <span style="color:#4ECDC4">■ 우수(4.0이상)</span>: 현재 경쟁력 유지 및 시스템 강화<br>
+          <span style="color:#C9A96E">■ 보통(2.5~4.0)</span>: 개선 여지 높음, 프로세스 정비 필요<br>
+          <span style="color:#E8826B">■ 미흡/취약(2.5미만)</span>: 즉각적인 솔루션 도입 필요 구간
+        </div>
+      </div>
     </div>
 
+    <!-- 4. 취약 영역 정밀 분석 -->
     <div class="report-section">
-      <div class="section-label">취약 영역 정밀 분석</div>
-      <div class="section-title">⚠️ ${weakTwo.join(' · ')} 영역 집중 진단</div>
-      <div class="section-body">${rx.desc}</div>
-      <div class="risk-box">이 두 영역의 점수가 전체 평균을 하회하며, 경영 성과에 가장 직접적인 영향을 미치고 있습니다.</div>
+      <div class="section-label">취약 영역 진단</div>
+      <div class="section-title">⚠️ ${weakTwo.join(' · ')} 영역 정밀 분석</div>
+      <div class="analysis-box" style="border-left: 4px solid #E8826B;">
+        <p>${rx.desc}</p>
+      </div>
+      <div class="highlight-box">
+        이 두 영역의 약점은 현재 매출 성장을 가로막는 **결정적 보틀넥(Bottleneck)**입니다. 해당 영역 개선 시 진료 효율이 약 25~35% 상승할 것으로 기대됩니다.
+      </div>
     </div>
 
+    <!-- 5. 3단계 솔루션 & 타임라인 -->
     <div class="report-section">
-      <div class="section-label">3단계 개선 솔루션</div>
-      <div class="section-title">${rx.title}</div>
+      <div class="section-label">실행 솔루션</div>
+      <div class="section-title">${rx.title} 로드맵</div>
       <div class="rx-card">${rxSteps}</div>
-      <div class="highlight-box">6개월 내 집중 실행 시 매출 15~30% 개선이 기대됩니다. 한가온컴퍼니 전문 컨설턴트가 단계별 실행을 지원합니다.</div>
+      <div class="timeline-box" style="margin-top:20px;">
+        <div class="timeline-item"><div class="time-label">1개월</div><div class="time-content">데이터 분석 및 프로세스 설계</div></div>
+        <div class="timeline-item"><div class="time-label">3개월</div><div class="time-content">현장 적용 및 시스템 안정화</div></div>
+        <div class="timeline-item"><div class="time-label">6개월</div><div class="time-content">성과 측정 및 고도화 단계</div></div>
+      </div>
     </div>
+
+    <!-- 6. 다음 단계 -->
+    <div class="report-section">
+      <div class="section-label">NEXT STEP</div>
+      <div class="section-title">한가온컴퍼니 맞춤 솔루션</div>
+      <div class="next-step-box">
+        취약 영역인 **${weakTwo.join(', ')}** 중심의 **현장 정밀 경영 감정**을 신청하세요. 원장님의 경영적 자유를 위한 최적의 시스템을 한가온컴퍼니가 설계해 드립니다.
+      </div>
+    </div>
+
     <div class="report-divider"></div>
   </div>
+
   <div class="report-footer">
     <button class="save-btn" onclick="saveReport()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
