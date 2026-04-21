@@ -1,4 +1,15 @@
-﻿const state = {
+﻿// v1.1.2 - 2026-04-21 18:33
+window.onerror = function (msg, url, line) {
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = 'Err: ' + msg + ' (L' + line + ')';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 5000);
+  }
+  return false;
+};
+
+const state = {
   name: '', phone: '', email: '',
   consent1: false, consent2: false,
   route: null, // 'A' | 'B'
@@ -189,8 +200,17 @@ let selectedOption = null;
 function goToScreen(id) {
   const current = document.getElementById(currentScreen);
   const next = document.getElementById(id);
-  if (!next) return;
-  current.classList.remove('active');
+  if (!next) {
+    console.error('Next screen not found:', id);
+    return;
+  }
+  if (current) {
+    current.classList.remove('active');
+  } else {
+    console.warn('Current screen not found:', currentScreen);
+    // If current is missing, we still want to show the next one
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  }
   next.classList.add('active');
   currentScreen = id;
 }
