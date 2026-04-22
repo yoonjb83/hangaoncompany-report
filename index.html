@@ -253,6 +253,8 @@
       cursor: pointer;
       transition: transform 0.15s, opacity 0.15s;
       letter-spacing: 0.02em;
+      position: relative;
+      z-index: 2;
     }
 
     .btn-primary:active {
@@ -749,12 +751,13 @@
 
     /* ── BOTTOM ACTION ── */
     .bottom-action {
-      position: fixed;
+      position: sticky;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
+
+
       width: 100%;
       max-width: 520px;
+      margin-top: auto;
       padding: 16px 24px calc(16px + var(--safe-bottom));
       background: linear-gradient(to top, var(--deep) 70%, transparent);
       z-index: 30;
