@@ -1,1332 +1,1598 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>한가온컴퍼니 병의원 경영 정밀진단</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>한가온컴퍼니 병의원 경영 정밀진단</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
-  :root {
-    --gold: #2D7D9A;
-    --gold-light: #A8D8EA;
-    --gold-dark: #1A5F7A;
-    --deep: #FFFFFF;
-    --navy: #F0F4F8;
-    --navy-mid: #E1ECF4;
-    --navy-light: #D0E4F0;
-    --white: #1E293B;
-    --white-off: #475569;
-    --text-main: #1E293B;
-    --text-sub: #475569;
-    --text-muted: #94A3B8;
-    --accent-teal: #0EA5E9;
-    --accent-rose: #E8826B;
-    --radius: 16px;
-    --safe-bottom: env(safe-area-inset-bottom, 20px);
-  }
+    :root {
+      --gold: #2D7D9A;
+      --gold-light: #A8D8EA;
+      --gold-dark: #1A5F7A;
+      --deep: #FFFFFF;
+      --navy: #F0F4F8;
+      --navy-mid: #E1ECF4;
+      --navy-light: #D0E4F0;
+      --white: #1E293B;
+      --white-off: #475569;
+      --text-main: #1E293B;
+      --text-sub: #475569;
+      --text-muted: #94A3B8;
+      --accent-teal: #0EA5E9;
+      --accent-rose: #E8826B;
+      --radius: 16px;
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  html, body {
-    width: 100%; height: 100%;
-    background: var(--deep);
-    font-family: 'Noto Sans KR', sans-serif;
-    color: var(--text-main);
-    overflow: hidden;
-    user-select: none;
-  }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: var(--deep);
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text-main);
+      overflow: hidden;
+      user-select: none;
+    }
 
-  #app {
-    width: 100%;
-    max-width: 520px;
-    height: 100dvh;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    background: var(--deep);
-  }
+    #app {
+      width: 100%;
+      max-width: 520px;
+      height: 100dvh;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      background: var(--deep);
+    }
 
-  /* ── SCREEN MANAGEMENT ── */
-  .screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    transform: translateX(30px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-  .screen.active {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(0);
-  }
-  .screen.exit {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
+    /* ── SCREEN MANAGEMENT ── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateX(30px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
 
-  /* ── BACKGROUND PATTERNS ── */
-  .bg-pattern {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(201,169,110,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 60% at 20% 90%, rgba(30,45,69,0.6) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .bg-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+    .screen.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+    }
 
-  /* ── PROGRESS BAR ── */
-  .progress-bar {
-    position: relative;
-    z-index: 10;
-    padding: 16px 24px 0;
-  }
-  .progress-track {
-    height: 2px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
-    border-radius: 1px;
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-  }
-  .progress-text {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-  }
+    .screen.exit {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
 
-  /* ── BACK BUTTON ── */
-  .back-btn {
-    position: absolute;
-    top: 16px;
-    left: 20px;
-    z-index: 20;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    border: 0.5px solid rgba(255,255,255,0.12);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.12); }
-  .back-btn svg { width: 16px; height: 16px; stroke: var(--text-sub); fill: none; }
+    /* ── BACKGROUND PATTERNS ── */
+    .bg-pattern {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(45, 125, 154, 0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 20% 90%, rgba(45, 125, 154, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  /* ── SPLASH SCREEN ── */
-  #screen-splash {
-    justify-content: center;
-    align-items: center;
-    padding: 40px 32px;
-  }
-  .splash-logo {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  .splash-logo .brand {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 17px;
-    font-weight: 300;
-    letter-spacing: 0.25em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .splash-logo .title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 30px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--white);
-    margin-bottom: 8px;
-  }
-  .splash-logo .subtitle {
-    font-size: 17px;
-    color: var(--text-sub);
-    letter-spacing: 0.05em;
-  }
-  .splash-divider {
-    width: 60px; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 0 auto 48px;
-  }
-  .splash-desc {
-    text-align: center;
-    font-size: 16px;
-    line-height: 1.8;
-    color: var(--text-sub);
-    margin-bottom: 48px;
-  }
-  .splash-badges {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-bottom: 48px;
-    flex-wrap: wrap;
-  }
-  .badge {
-    padding: 6px 14px;
-    background: rgba(201,169,110,0.1);
-    border: 0.5px solid rgba(201,169,110,0.3);
-    border-radius: 20px;
-    font-size: 12px;
-    color: var(--gold-light);
-    letter-spacing: 0.02em;
-  }
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201, 169, 110, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 169, 110, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  /* ── BUTTONS ── */
-  .btn-primary {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #1E293B;
-    cursor: pointer;
-    transition: transform 0.15s, opacity 0.15s;
-    letter-spacing: 0.02em;
-  }
-  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      position: relative;
+      z-index: 10;
+      padding: 16px 24px 0;
+    }
 
-  .btn-secondary {
-    width: 100%;
-    padding: 16px;
-    background: transparent;
-    border: 1px solid rgba(201,169,110,0.4);
-    border-radius: var(--radius);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--gold-light);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-secondary:active { background: rgba(201,169,110,0.08); }
+    .progress-track {
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1px;
+      overflow: hidden;
+    }
 
-  /* ── FORM SCREEN ── */
-  #screen-form {
-    padding: 0;
-  }
-  .form-header {
-    padding: 56px 28px 24px;
-    position: relative;
-    z-index: 2;
-  }
-  .form-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .form-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.4;
-    color: var(--white);
-    margin-bottom: 6px;
-  }
-  .form-sub {
-    font-size: 17px;
-    color: var(--text-sub);
-    line-height: 1.6;
-  }
-  .form-body {
-    padding: 0 24px 24px;
-    position: relative;
-    z-index: 2;
-    flex: 1;
-  }
-  .form-group {
-    margin-bottom: 20px;
-  }
-  .form-group label {
-    display: block;
-    font-size: 17px;
-    color: var(--text-sub);
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
-  .form-group .required {
-    color: var(--accent-rose);
-    margin-left: 2px;
-  }
-  .form-input {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 17px;
-    color: var(--text-main);
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .form-input:focus { border-color: var(--gold); }
-  .form-input::placeholder { color: var(--text-muted); }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+      border-radius: 1px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-  .consent-box {
-    background: rgba(255,255,255,0.03);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  .consent-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .consent-item:last-child { margin-bottom: 0; }
-  .consent-checkbox {
-    width: 20px; height: 20px;
-    border-radius: 6px;
-    border: 1.5px solid rgba(201,169,110,0.4);
-    background: transparent;
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    margin-top: 2px;
-  }
-  .consent-checkbox.checked {
-    background: var(--gold);
-    border-color: var(--gold);
-  }
-  .consent-checkbox.checked::after {
-    content: '';
-    width: 5px; height: 9px;
-    border: 2px solid var(--deep);
-    border-top: none; border-left: none;
-    transform: rotate(45deg) translateY(-1px);
-    display: block;
-  }
-  .consent-text {
-    font-size: 17px;
-    color: var(--text-sub);
-    line-height: 1.6;
-  }
-  .consent-text strong { color: var(--text-main); font-weight: 500; }
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
 
-  /* ── BRANCH SCREEN ── */
-  #screen-branch {
-    justify-content: center;
-    align-items: center;
-    padding: 40px 28px;
-  }
-  .branch-header {
-    text-align: center;
-    margin-bottom: 48px;
-    position: relative;
-    z-index: 2;
-  }
-  .branch-header .step-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .branch-header h2 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--white);
-    line-height: 1.4;
-    margin-bottom: 10px;
-  }
-  .branch-header p {
-    font-size: 16px;
-    color: var(--text-sub);
-    line-height: 1.7;
-  }
-  .branch-cards {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
-    z-index: 2;
-  }
-  .branch-card {
-    padding: 28px 24px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s;
-    border: 1px solid;
-    position: relative;
-    overflow: hidden;
-  }
-  .branch-card.route-a {
-    background: linear-gradient(135deg, rgba(201,169,110,0.08) 0%, rgba(201,169,110,0.02) 100%);
-    border-color: rgba(201,169,110,0.3);
-  }
-  .branch-card.route-b {
-    background: linear-gradient(135deg, rgba(78,205,196,0.08) 0%, rgba(78,205,196,0.02) 100%);
-    border-color: rgba(78,205,196,0.3);
-  }
-  .branch-card:active { transform: scale(0.97); }
-  .branch-card .card-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    display: block;
-  }
-  .branch-card .card-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .route-a .card-title { color: var(--gold-light); }
-  .route-b .card-title { color: var(--accent-teal); }
-  .branch-card .card-desc {
-    font-size: 17px;
-    color: var(--text-sub);
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-  .branch-card .card-meta {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .meta-tag {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-  }
-  .route-a .meta-tag {
-    background: rgba(201,169,110,0.15);
-    color: var(--gold-light);
-    border: 0.5px solid rgba(201,169,110,0.2);
-  }
-  .route-b .meta-tag {
-    background: rgba(78,205,196,0.12);
-    color: var(--accent-teal);
-    border: 0.5px solid rgba(78,205,196,0.2);
-  }
-  .branch-card .card-arrow {
-    position: absolute;
-    right: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.4;
-    font-size: 24px;
-  }
+    /* ── BACK BUTTON ── */
+    .back-btn {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      z-index: 20;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-  /* ── QUESTION SCREEN ── */
-  #screen-question {
-    padding: 0;
-  }
-  .question-header {
-    padding: 64px 28px 20px;
-    position: relative;
-    z-index: 2;
-  }
-  .q-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .q-area {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-  .q-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); }
-  .q-num {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-  }
-  .question-text {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: var(--white);
-  }
-  .question-sub {
-    font-size: 17px;
-    color: var(--text-sub);
-    margin-top: 8px;
-    line-height: 1.6;
-  }
-  .options-container {
-    padding: 8px 24px 100px;
-    position: relative;
-    z-index: 2;
-    overflow-y: auto;
-  }
-  .option-item {
-    margin-bottom: 12px;
-    padding: 18px 20px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .option-item:active { transform: scale(0.98); }
-  .option-item.selected {
-    background: rgba(201,169,110,0.1);
-    border-color: rgba(201,169,110,0.5);
-  }
-  .option-item.selected-b {
-    background: rgba(78,205,196,0.08);
-    border-color: rgba(78,205,196,0.4);
-  }
-  .option-dot {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.2);
-    flex-shrink: 0;
-    margin-top: 2px;
-    transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .option-item.selected .option-dot {
-    background: var(--gold);
-    border-color: var(--gold);
-  }
-  .option-item.selected .option-dot::after {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--deep);
-  }
-  .option-item.selected-b .option-dot {
-    background: var(--accent-teal);
-    border-color: var(--accent-teal);
-  }
-  .option-item.selected-b .option-dot::after {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--deep);
-  }
-  .option-content { flex: 1; }
-  .option-label {
-    font-size: 17px;
-    color: var(--text-main);
-    font-weight: 500;
-    margin-bottom: 3px;
-  }
-  .option-desc {
-    font-size: 12px;
-    color: var(--text-sub);
-    line-height: 1.5;
-  }
+    .back-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+    }
 
-  /* ── SCALE OPTION (1~5) ── */
-  .scale-options {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .scale-btn {
-    flex: 1;
-    padding: 16px 4px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .scale-btn .scale-num {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--text-main);
-  }
-  .scale-btn .scale-lbl {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-align: center;
-    letter-spacing: 0.02em;
-  }
-  .scale-btn.selected {
-    background: rgba(201,169,110,0.15);
-    border-color: rgba(201,169,110,0.6);
-  }
-  .scale-btn.selected .scale-num { color: var(--gold); }
-  .scale-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-muted);
-    padding: 0 4px;
-    margin-bottom: 24px;
-  }
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-sub);
+      fill: none;
+    }
 
-  /* ── BOTTOM ACTION ── */
-  .bottom-action {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 520px;
-    padding: 16px 24px calc(16px + var(--safe-bottom));
-    background: linear-gradient(to top, var(--deep) 70%, transparent);
-    z-index: 30;
-  }
+    /* ── SPLASH SCREEN ── */
+    #screen-splash {
+      justify-content: center;
+      align-items: center;
+      padding: 40px 32px;
+    }
 
-  /* ── LOADING SCREEN ── */
-  #screen-loading {
-    justify-content: center;
-    align-items: center;
-  }
-  .loading-center {
-    text-align: center;
-    position: relative;
-    z-index: 2;
-  }
-  .loading-ring {
-    width: 80px; height: 80px;
-    margin: 0 auto 32px;
-    position: relative;
-  }
-  .loading-ring svg {
-    width: 100%; height: 100%;
-    animation: rotate 2s linear infinite;
-  }
-  @keyframes rotate { to { transform: rotate(360deg); } }
-  .loading-text {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 12px;
-  }
-  .loading-sub {
-    font-size: 17px;
-    color: var(--text-sub);
-    line-height: 1.7;
-  }
-  .loading-dots {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 24px;
-  }
-  .loading-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes pulse { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
+    .splash-logo {
+      text-align: center;
+      margin-bottom: 48px;
+    }
 
-  /* ── REPORT SCREEN ── */
-  #screen-report {
-    padding: 0;
-    overflow-y: auto;
-  }
-  .report-hero {
-    padding: 56px 28px 32px;
-    position: relative;
-    background: linear-gradient(180deg, rgba(17,24,39,1) 0%, rgba(10,14,26,0.95) 100%);
-    border-bottom: 0.5px solid rgba(201,169,110,0.2);
-  }
-  .report-type {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .report-persona {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.3;
-    margin-bottom: 8px;
-  }
-  .report-tagline {
-    font-size: 16px;
-    color: var(--gold-light);
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    margin-bottom: 20px;
-  }
-  .report-tags {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
-  .report-tag {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    background: rgba(201,169,110,0.1);
-    border: 0.5px solid rgba(201,169,110,0.25);
-    color: var(--gold-light);
-  }
+    .splash-logo .brand {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 17px;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
 
-  .report-body { padding: 24px; }
-  .report-section {
-    margin-bottom: 28px;
-    padding: 22px;
-    background: rgba(255,255,255,0.03);
-    border: 0.5px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-  }
-  .section-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .section-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 12px;
-    line-height: 1.4;
-  }
-  .section-body {
-    font-size: 16px;
-    color: var(--text-sub);
-    line-height: 1.8;
-  }
-  .highlight-box {
-    margin-top: 14px;
-    padding: 14px 16px;
-    background: rgba(201,169,110,0.08);
-    border-left: 3px solid var(--gold);
-    border-radius: 0 8px 8px 0;
-    font-size: 17px;
-    color: var(--gold-light);
-    line-height: 1.7;
-  }
-  .risk-box {
-    margin-top: 14px;
-    padding: 14px 16px;
-    background: rgba(232,130,107,0.08);
-    border-left: 3px solid var(--accent-rose);
-    border-radius: 0 8px 8px 0;
-    font-size: 17px;
-    color: #F0A090;
-    line-height: 1.7;
-  }
+    .splash-logo .title {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
 
-  /* radar chart */
-  .radar-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 16px 0;
-  }
-  .radar-wrap svg text { font-family: 'Noto Sans KR', sans-serif; }
+    .splash-logo .subtitle {
+      font-size: 17px;
+      color: var(--text-sub);
+      letter-spacing: 0.05em;
+    }
 
-  /* score bars */
-  .score-list { margin-top: 14px; }
-  .score-item {
-    margin-bottom: 14px;
-  }
-  .score-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  .score-name { font-size: 17px; color: var(--text-sub); }
-  .score-val { font-size: 17px; font-weight: 600; color: var(--white); }
-  .score-track {
-    height: 5px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .score-bar {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-  }
+    .splash-divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 48px;
+    }
 
-  /* efficiency badge */
-  .efficiency-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 12px 0;
-  }
-  .eff-high { background: rgba(78,205,196,0.15); border: 1px solid rgba(78,205,196,0.4); color: var(--accent-teal); }
-  .eff-mid { background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.4); color: var(--gold-light); }
-  .eff-low { background: rgba(232,130,107,0.15); border: 1px solid rgba(232,130,107,0.4); color: var(--accent-rose); }
+    .splash-desc {
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-sub);
+      margin-bottom: 48px;
+    }
 
-  /* prescription cards */
-  .rx-card {
-    margin-top: 12px;
-    padding: 18px;
-    background: rgba(255,255,255,0.03);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-  }
-  .rx-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .rx-step:last-child { margin-bottom: 0; }
-  .rx-num {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: #1E293B;
-    flex-shrink: 0;
-  }
-  .rx-content { flex: 1; }
-  .rx-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-  .rx-desc { font-size: 17px; color: var(--text-sub); line-height: 1.6; }
+    .splash-badges {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
 
-  /* save button */
-  .save-btn {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #1E293B;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .save-btn:active { opacity: 0.9; transform: scale(0.98); }
-  .restart-btn {
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: var(--radius);
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 16px;
-    color: var(--text-sub);
-    cursor: pointer;
-  }
+    .badge {
+      padding: 6px 14px;
+      background: rgba(201, 169, 110, 0.1);
+      border: 0.5px solid rgba(201, 169, 110, 0.3);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 0.02em;
+    }
 
-  /* B-route: basic metrics */
-  .metric-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .metric-card {
-    padding: 16px;
-    background: rgba(255,255,255,0.04);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    text-align: center;
-  }
-  .metric-val {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 4px;
-  }
-  .metric-lbl { font-size: 11px; color: var(--text-muted); letter-spacing: 0.03em; }
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1E293B;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+      letter-spacing: 0.02em;
+    }
 
-  /* text input for goal */
-  .goal-input {
-    width: 100%;
-    padding: 16px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--white);
-    text-align: center;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .goal-input:focus { border-color: var(--accent-teal); }
-  .goal-input::placeholder { color: var(--text-muted); font-weight: 400; font-size: 16px; }
+    .btn-primary:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
 
-  /* section divider in report */
-  .report-divider {
-    height: 0.5px;
-    background: rgba(255,255,255,0.06);
-    margin: 4px 0 28px;
-  }
+    .btn-secondary {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: 1px solid rgba(201, 169, 110, 0.4);
+      border-radius: var(--radius);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--gold-light);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-  .report-footer {
-    padding: 0 24px calc(32px + var(--safe-bottom));
-  }
+    .btn-secondary:active {
+      background: rgba(201, 169, 110, 0.08);
+    }
 
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: rgba(30,45,69,0.95);
-    border: 0.5px solid rgba(201,169,110,0.3);
-    border-radius: 20px;
-    padding: 12px 24px;
-    font-size: 17px;
-    color: var(--gold-light);
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 999;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    /* ── FORM SCREEN ── */
+    #screen-form {
+      padding: 0;
+    }
 
-</style>
+    .form-header {
+      padding: 56px 28px 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .form-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .form-title {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .form-sub {
+      font-size: 17px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    .form-body {
+      padding: 0 24px 24px;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 17px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .form-group .required {
+      color: var(--accent-rose);
+      margin-left: 2px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--gold);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .consent-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .consent-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .consent-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .consent-checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(201, 169, 110, 0.4);
+      background: transparent;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin-top: 2px;
+    }
+
+    .consent-checkbox.checked {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .consent-checkbox.checked::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid var(--deep);
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+      display: block;
+    }
+
+    .consent-text {
+      font-size: 17px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    .consent-text strong {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* ── BRANCH SCREEN ── */
+    #screen-branch {
+      justify-content: center;
+      align-items: center;
+      padding: 40px 28px;
+    }
+
+    .branch-header {
+      text-align: center;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .branch-header .step-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .branch-header h2 {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .branch-header p {
+      font-size: 16px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .branch-cards {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .branch-card {
+      padding: 28px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .branch-card.route-a {
+      background: linear-gradient(135deg, rgba(201, 169, 110, 0.08) 0%, rgba(201, 169, 110, 0.02) 100%);
+      border-color: rgba(201, 169, 110, 0.3);
+    }
+
+    .branch-card.route-b {
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.08) 0%, rgba(78, 205, 196, 0.02) 100%);
+      border-color: rgba(78, 205, 196, 0.3);
+    }
+
+    .branch-card:active {
+      transform: scale(0.97);
+    }
+
+    .branch-card .card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .branch-card .card-title {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .route-a .card-title {
+      color: var(--gold-light);
+    }
+
+    .route-b .card-title {
+      color: var(--accent-teal);
+    }
+
+    .branch-card .card-desc {
+      font-size: 17px;
+      color: var(--text-sub);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .branch-card .card-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+
+    .route-a .meta-tag {
+      background: rgba(201, 169, 110, 0.15);
+      color: var(--gold-light);
+      border: 0.5px solid rgba(201, 169, 110, 0.2);
+    }
+
+    .route-b .meta-tag {
+      background: rgba(78, 205, 196, 0.12);
+      color: var(--accent-teal);
+      border: 0.5px solid rgba(78, 205, 196, 0.2);
+    }
+
+    .branch-card .card-arrow {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.4;
+      font-size: 24px;
+    }
+
+    /* ── QUESTION SCREEN ── */
+    #screen-question {
+      padding: 0;
+    }
+
+    .question-header {
+      padding: 64px 28px 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .q-area {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .q-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .q-num {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .question-text {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--white);
+    }
+
+    .question-sub {
+      font-size: 17px;
+      color: var(--text-sub);
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .options-container {
+      padding: 8px 24px 100px;
+      position: relative;
+      z-index: 2;
+      overflow-y: auto;
+    }
+
+    .option-item {
+      margin-bottom: 12px;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .option-item:active {
+      transform: scale(0.98);
+    }
+
+    .option-item.selected {
+      background: rgba(201, 169, 110, 0.1);
+      border-color: rgba(201, 169, 110, 0.5);
+    }
+
+    .option-item.selected-b {
+      background: rgba(78, 205, 196, 0.08);
+      border-color: rgba(78, 205, 196, 0.4);
+    }
+
+    .option-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option-item.selected .option-dot {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .option-item.selected .option-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--deep);
+    }
+
+    .option-item.selected-b .option-dot {
+      background: var(--accent-teal);
+      border-color: var(--accent-teal);
+    }
+
+    .option-item.selected-b .option-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--deep);
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-label {
+      font-size: 17px;
+      color: var(--text-main);
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .option-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* ── SCALE OPTION (1~5) ── */
+    .scale-options {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .scale-btn {
+      flex: 1;
+      padding: 16px 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .scale-btn .scale-num {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .scale-btn .scale-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    .scale-btn.selected {
+      background: rgba(201, 169, 110, 0.15);
+      border-color: rgba(201, 169, 110, 0.6);
+    }
+
+    .scale-btn.selected .scale-num {
+      color: var(--gold);
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0 4px;
+      margin-bottom: 24px;
+    }
+
+    /* ── BOTTOM ACTION ── */
+    .bottom-action {
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      margin-top: auto;
+      padding: 16px 24px calc(16px + var(--safe-bottom));
+      background: linear-gradient(to top, var(--deep) 80%, transparent);
+      z-index: 10;
+    }
+
+    /* ── LOADING SCREEN ── */
+    #screen-loading {
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-center {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .loading-ring {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 32px;
+      position: relative;
+    }
+
+    .loading-ring svg {
+      width: 100%;
+      height: 100%;
+      animation: rotate 2s linear infinite;
+    }
+
+    @keyframes rotate {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+
+    .loading-sub {
+      font-size: 17px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 24px;
+    }
+
+    .loading-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .loading-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loading-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* ── REPORT SCREEN ── */
+    #screen-report {
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .report-hero {
+      padding: 56px 28px 32px;
+      position: relative;
+      background: linear-gradient(180deg, rgba(17, 24, 39, 1) 0%, rgba(10, 14, 26, 0.95) 100%);
+      border-bottom: 0.5px solid rgba(201, 169, 110, 0.2);
+    }
+
+    .report-type {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .report-persona {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .report-tagline {
+      font-size: 16px;
+      color: var(--gold-light);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+    }
+
+    .report-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .report-tag {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      background: rgba(201, 169, 110, 0.1);
+      border: 0.5px solid rgba(201, 169, 110, 0.25);
+      color: var(--gold-light);
+    }
+
+    .report-body {
+      padding: 24px;
+    }
+
+    .report-section {
+      margin-bottom: 28px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.5px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .section-body {
+      font-size: 16px;
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+
+    .highlight-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(201, 169, 110, 0.08);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      font-size: 17px;
+      color: var(--gold-light);
+      line-height: 1.7;
+    }
+
+    .risk-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(232, 130, 107, 0.08);
+      border-left: 3px solid var(--accent-rose);
+      border-radius: 0 8px 8px 0;
+      font-size: 17px;
+      color: #F0A090;
+      line-height: 1.7;
+    }
+
+    /* radar chart */
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    .radar-wrap svg text {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* score bars */
+    .score-list {
+      margin-top: 14px;
+    }
+
+    .score-item {
+      margin-bottom: 14px;
+    }
+
+    .score-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .score-name {
+      font-size: 17px;
+      color: var(--text-sub);
+    }
+
+    .score-val {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .score-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* efficiency badge */
+    .efficiency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 17px;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+
+    .eff-high {
+      background: rgba(78, 205, 196, 0.15);
+      border: 1px solid rgba(78, 205, 196, 0.4);
+      color: var(--accent-teal);
+    }
+
+    .eff-mid {
+      background: rgba(201, 169, 110, 0.15);
+      border: 1px solid rgba(201, 169, 110, 0.4);
+      color: var(--gold-light);
+    }
+
+    .eff-low {
+      background: rgba(232, 130, 107, 0.15);
+      border: 1px solid rgba(232, 130, 107, 0.4);
+      color: var(--accent-rose);
+    }
+
+    /* prescription cards */
+    .rx-card {
+      margin-top: 12px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    .rx-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .rx-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .rx-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1E293B;
+      flex-shrink: 0;
+    }
+
+    .rx-content {
+      flex: 1;
+    }
+
+    .rx-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .rx-desc {
+      font-size: 17px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    /* save button */
+    .save-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1E293B;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .save-btn:active {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+
+    .restart-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    /* B-route: basic metrics */
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .metric-card {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: 'Noto Sans KR', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .metric-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* text input for goal */
+    .goal-input {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .goal-input:focus {
+      border-color: var(--accent-teal);
+    }
+
+    .goal-input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 16px;
+    }
+
+    /* section divider in report */
+    .report-divider {
+      height: 0.5px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 4px 0 28px;
+    }
+
+    .report-footer {
+      padding: 0 24px calc(32px + var(--safe-bottom));
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(30, 45, 69, 0.95);
+      border: 0.5px solid rgba(201, 169, 110, 0.3);
+      border-radius: 20px;
+      padding: 12px 24px;
+      font-size: 17px;
+      color: var(--gold-light);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
+
 <body>
-<div id="app">
+  <div id="app">
 
-  <!-- SCREEN 1: SPLASH -->
-  <div class="screen active" id="screen-splash">
-    <div class="bg-pattern"></div>
-    <div class="bg-grid"></div>
-    <div class="splash-logo">
-      <div class="brand">한가온컴퍼니 × KMEX 2026</div>
-      <div class="title">병의원 경영<br>입체 정밀진단</div>
-      <div class="subtitle">Clinic Business Intelligence Diagnosis</div>
+    <!-- SCREEN 1: SPLASH -->
+    <div class="screen active" id="screen-splash">
+      <div class="bg-pattern"></div>
+      <div class="bg-grid"></div>
+      <div class="splash-logo">
+        <div class="brand">한가온컴퍼니 × KMEX 2026</div>
+        <div class="title">병의원 경영<br>입체 정밀진단</div>
+        <div class="subtitle">Clinic Business Intelligence Diagnosis</div>
+      </div>
+      <div class="splash-divider"></div>
+      <div class="splash-badges">
+        <span class="badge">개원 DNA 진단</span>
+        <span class="badge">경영 밸런스 진단</span>
+        <span class="badge">맞춤 처방 리포트</span>
+      </div>
+      <div class="splash-desc">
+        귀원의 경영 현황을 정밀 분석하여<br>
+        전문가 수준의 맞춤형 진단 리포트를<br>
+        즉시 제공해 드립니다.
+      </div>
+      <button class="btn-primary" onclick="goToForm()">진단 시작하기</button>
     </div>
-    <div class="splash-divider"></div>
-    <div class="splash-badges">
-      <span class="badge">개원 DNA 진단</span>
-      <span class="badge">경영 밸런스 진단</span>
-      <span class="badge">맞춤 처방 리포트</span>
-    </div>
-    <div class="splash-desc">
-      귀원의 경영 현황을 정밀 분석하여<br>
-      전문가 수준의 맞춤형 진단 리포트를<br>
-      즉시 제공해 드립니다.
-    </div>
-    <button class="btn-primary" onclick="goToForm()">진단 시작하기</button>
-  </div>
 
-  <!-- SCREEN 2: FORM -->
-  <div class="screen" id="screen-form">
-    <div class="bg-pattern"></div>
-    <button class="back-btn" onclick="goToScreen('screen-splash')">
-      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="form-header">
-      <div class="form-label">기본 정보 입력</div>
-      <div class="form-title">먼저 간단한 정보를<br>입력해 주세요</div>
-      <div class="form-sub">수집된 정보는 진단 리포트 발송 외<br>다른 용도로 사용되지 않습니다.</div>
-    </div>
-    <div class="form-body">
-      <div class="form-group">
-        <label>성함<span class="required">*</span></label>
-        <input class="form-input" id="input-name" type="text" placeholder="홍길동" maxlength="20" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone').focus();}">
-      </div>
-      <div class="form-group">
-        <label>연락처<span class="required">*</span></label>
-        <input class="form-input" id="input-phone" type="tel" placeholder="010-0000-0000" maxlength="13" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email').focus();}">
-      </div>
-      <div class="form-group">
-        <label>이메일<span class="required">*</span></label>
-        <input class="form-input" id="input-email" type="email" placeholder="example@clinic.com" onkeydown="if(event.key==='Enter'){event.preventDefault();submitForm();}">
-      </div>
-      <div class="consent-box">
-        <div class="consent-item" onclick="toggleConsent('c1')">
-          <div class="consent-checkbox" id="c1"></div>
-          <div class="consent-text"><strong>[필수]</strong> 개인정보 수집 및 이용에 동의합니다. 수집 항목: 성명, 연락처, 이메일 / 보유기간: 1년</div>
-        </div>
-        <div class="consent-item" onclick="toggleConsent('c2')">
-          <div class="consent-checkbox" id="c2"></div>
-          <div class="consent-text"><strong>[선택]</strong> 마케팅 목적 활용 및 경영 정보 수신에 동의합니다.</div>
-        </div>
-      </div>
-    </div>
-    <div class="bottom-action">
-      <button class="btn-primary" onclick="submitForm()">다음 단계로</button>
-    </div>
-  </div>
-
-  <!-- SCREEN 3: BRANCH -->
-  <div class="screen" id="screen-branch">
-    <div class="bg-pattern"></div>
-    <div class="bg-grid"></div>
-    <button class="back-btn" onclick="goToScreen('screen-form')">
-      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="branch-header">
-      <div class="step-label">경영 상태 선택</div>
-      <h2>현재 상황을<br>선택해 주세요</h2>
-      <p>선택하신 경로에 맞는<br>맞춤형 진단을 진행합니다.</p>
-    </div>
-    <div class="branch-cards">
-      <div class="branch-card route-a" onclick="startRouteA()">
-        <span class="card-icon">🌱</span>
-        <div class="card-title">개원 예정</div>
-        <div class="card-desc">아직 개원하지 않았거나 개원을 준비 중인 원장님을 위한 <strong>개원 DNA 진단</strong>입니다.</div>
-        <div class="card-meta">
-          <span class="meta-tag">9문항</span>
-          <span class="meta-tag">약 5분 소요</span>
-          <span class="meta-tag">12가지 페르소나</span>
-        </div>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="branch-card route-b" onclick="startRouteB()">
-        <span class="card-icon">🏥</span>
-        <div class="card-title">기개원 운영 중</div>
-        <div class="card-desc">현재 한의원을 운영 중인 원장님을 위한 <strong>경영 밸런스 진단</strong>입니다.</div>
-        <div class="card-meta">
-          <span class="meta-tag">21문항</span>
-          <span class="meta-tag">약 8분 소요</span>
-          <span class="meta-tag">15가지 처방</span>
-        </div>
-        <div class="card-arrow">→</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCREEN 4: QUESTION -->
-  <div class="screen" id="screen-question">
-    <div class="bg-pattern"></div>
-    <button class="back-btn" id="q-back-btn" onclick="goBackQuestion()">
-      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="progress-bar" id="q-progress-bar">
-      <div class="progress-track"><div class="progress-fill" id="q-progress-fill" style="width:0%"></div></div>
-      <div class="progress-text">
-        <span id="q-progress-label">진단 중</span>
-        <span id="q-progress-fraction">0 / 0</span>
-      </div>
-    </div>
-    <div class="question-header">
-      <div class="q-meta">
-        <span class="q-area" id="q-area-label"></span>
-        <div class="q-dot"></div>
-        <span class="q-num" id="q-num-label"></span>
-      </div>
-      <div class="question-text" id="q-text"></div>
-      <div class="question-sub" id="q-sub"></div>
-    </div>
-    <div class="options-container" id="options-container"></div>
-    <div class="bottom-action">
-      <button class="btn-primary" id="q-next-btn" onclick="nextQuestion()">다음</button>
-    </div>
-  </div>
-
-  <!-- SCREEN 5: LOADING -->
-  <div class="screen" id="screen-loading">
-    <div class="bg-pattern"></div>
-    <div class="loading-center">
-      <div class="loading-ring">
-        <svg viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(201,169,110,0.15)" stroke-width="3"/>
-          <circle cx="40" cy="40" r="34" fill="none" stroke="url(#lg)" stroke-width="3"
-            stroke-dasharray="60 154" stroke-linecap="round"/>
-          <defs>
-            <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#8B6F3E"/>
-              <stop offset="100%" stop-color="#C9A96E"/>
-            </linearGradient>
-          </defs>
+    <!-- SCREEN 2: FORM -->
+    <div class="screen" id="screen-form">
+      <div class="bg-pattern"></div>
+      <button class="back-btn" onclick="goToScreen('screen-splash')">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
         </svg>
+      </button>
+      <div class="form-header">
+        <div class="form-label">기본 정보 입력</div>
+        <div class="form-title">먼저 간단한 정보를<br>입력해 주세요</div>
+        <div class="form-sub">수집된 정보는 진단 리포트 발송 외<br>다른 용도로 사용되지 않습니다.</div>
       </div>
-      <div class="loading-text" id="loading-title">AI 분석 중...</div>
-      <div class="loading-sub" id="loading-sub">응답 데이터를 바탕으로<br>정밀 진단 리포트를 생성하고 있습니다.</div>
-      <div class="loading-dots">
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
+      <div class="form-body">
+        <div class="form-group">
+          <label>성함<span class="required">*</span></label>
+          <input class="form-input" id="input-name" type="text" placeholder="홍길동" maxlength="20"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone').focus();}">
+        </div>
+        <div class="form-group">
+          <label>연락처<span class="required">*</span></label>
+          <input class="form-input" id="input-phone" type="tel" placeholder="010-0000-0000" maxlength="13"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email').focus();}">
+        </div>
+        <div class="form-group">
+          <label>이메일<span class="required">*</span></label>
+          <input class="form-input" id="input-email" type="email" placeholder="example@clinic.com"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();submitForm();}">
+        </div>
+        <div class="consent-box">
+          <div class="consent-item" onclick="toggleConsent('c1')">
+            <div class="consent-checkbox" id="c1"></div>
+            <div class="consent-text"><strong>[필수]</strong> 개인정보 수집 및 이용에 동의합니다. 수집 항목: 성명, 연락처, 이메일 / 보유기간: 1년</div>
+          </div>
+          <div class="consent-item" onclick="toggleConsent('c2')">
+            <div class="consent-checkbox" id="c2"></div>
+            <div class="consent-text"><strong>[선택]</strong> 마케팅 목적 활용 및 경영 정보 수신에 동의합니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-action">
+        <button class="btn-primary" onclick="submitForm()">다음 단계로</button>
       </div>
     </div>
+
+    <!-- SCREEN 3: BRANCH -->
+    <div class="screen" id="screen-branch">
+      <div class="bg-pattern"></div>
+      <div class="bg-grid"></div>
+      <button class="back-btn" onclick="goToScreen('screen-form')">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <div class="branch-header">
+        <div class="step-label">경영 상태 선택</div>
+        <h2>현재 상황을<br>선택해 주세요</h2>
+        <p>선택하신 경로에 맞는<br>맞춤형 진단을 진행합니다.</p>
+      </div>
+      <div class="branch-cards">
+        <div class="branch-card route-a" onclick="startRouteA()">
+          <span class="card-icon">🌱</span>
+          <div class="card-title">개원 예정</div>
+          <div class="card-desc">아직 개원하지 않았거나 개원을 준비 중인 원장님을 위한 <strong>개원 DNA 진단</strong>입니다.</div>
+          <div class="card-meta">
+            <span class="meta-tag">9문항</span>
+            <span class="meta-tag">약 5분 소요</span>
+            <span class="meta-tag">12가지 페르소나</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+        <div class="branch-card route-b" onclick="startRouteB()">
+          <span class="card-icon">🏥</span>
+          <div class="card-title">기개원 운영 중</div>
+          <div class="card-desc">현재 한의원을 운영 중인 원장님을 위한 <strong>경영 밸런스 진단</strong>입니다.</div>
+          <div class="card-meta">
+            <span class="meta-tag">21문항</span>
+            <span class="meta-tag">약 8분 소요</span>
+            <span class="meta-tag">15가지 처방</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: QUESTION -->
+    <div class="screen" id="screen-question">
+      <div class="bg-pattern"></div>
+      <button class="back-btn" id="q-back-btn" onclick="goBackQuestion()">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <div class="progress-bar" id="q-progress-bar">
+        <div class="progress-track">
+          <div class="progress-fill" id="q-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-text">
+          <span id="q-progress-label">진단 중</span>
+          <span id="q-progress-fraction">0 / 0</span>
+        </div>
+      </div>
+      <div class="question-header">
+        <div class="q-meta">
+          <span class="q-area" id="q-area-label"></span>
+          <div class="q-dot"></div>
+          <span class="q-num" id="q-num-label"></span>
+        </div>
+        <div class="question-text" id="q-text"></div>
+        <div class="question-sub" id="q-sub"></div>
+      </div>
+      <div class="options-container" id="options-container"></div>
+      <div class="bottom-action">
+        <button class="btn-primary" id="q-next-btn" onclick="nextQuestion()">다음</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: LOADING -->
+    <div class="screen" id="screen-loading">
+      <div class="bg-pattern"></div>
+      <div class="loading-center">
+        <div class="loading-ring">
+          <svg viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(201,169,110,0.15)" stroke-width="3" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="url(#lg)" stroke-width="3" stroke-dasharray="60 154"
+              stroke-linecap="round" />
+            <defs>
+              <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#8B6F3E" />
+                <stop offset="100%" stop-color="#C9A96E" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="loading-text" id="loading-title">AI 분석 중...</div>
+        <div class="loading-sub" id="loading-sub">응답 데이터를 바탕으로<br>정밀 진단 리포트를 생성하고 있습니다.</div>
+        <div class="loading-dots">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: REPORT -->
+    <div class="screen" id="screen-report">
+      <div id="report-content"></div>
+    </div>
+
   </div>
 
-  <!-- SCREEN 6: REPORT -->
-  <div class="screen" id="screen-report">
-    <div id="report-content"></div>
-  </div>
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-// ─────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────
-const state = {
-  name: '', phone: '', email: '',
-  consent1: false, consent2: false,
-  route: null, // 'A' | 'B'
-  answers: [],
-  currentQ: 0,
-  bMetrics: { revenue: '', visitors: '', goal: '' }
+  <script>
+// ──    ───────────────────────────────────────
+// ST    ATE
+// ──    ───────────────────────────────────────
+const     state = {
+  nam       '', phone: '', email: '',
+  con      nt1: false, consent2: false,
+  rou      : null, // 'A' | 'B'
+  ans      rs: [],
+  cur      ntQ: 0,
+  bMe      ics: { revenue: '', visitors: '', goal: '' }
 };
 
-// Google Sheets integration
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzs3BTXJsNqP5K3vfQwKxkY5ydoCHsfbc_m2e_VjO_FkKY-Vh1xmDyqCMI6LbS1-J8T8A/exec';
+/    / Go    ogle Sheets integration
+  con    st SHEET_URL = 'https://script.google.com/macros/s/AKfycbzs3BTXJsNqP5K3vfQwKx    kY5ydoCHsfbc_m2e_VjO_FkKY-Vh1xmDyqCMI6LbS1-J8    T8A/exec';
 
-// ─────────────────────────────────────────
-// ROUTE A: 9 QUESTIONS
-// ─────────────────────────────────────────
-const questionsA = [
-  // 규모/시설 (3)
+// ─────────    ────────────────────────────────
+// ROUTE A:     9 QUESTIONS
+// ──────      ─────────────      ──        ────────────
+const questionsA =         // 규모/시설 (3)
   {
-    area: '규모 · 시설', num: '1 / 9',
-    text: '개원 시 계획하고 계신 의원 규모는 어느 정도입니까?',
-    sub: '진료 공간 기준으로 선택해 주세요.',
+    area: '규모 · 시설',          '1 / 9',
+    text: '개원 시 계획        신 의원 규모는 어느 정도입니        
+    sub: '          기준으로 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '소형 (1~2진료실)', desc: '집중 진료, 초기 비용 최소화 지향', val: 'S' },
-      { label: '중형 (3~4진료실)', desc: '균형 잡힌 운영, 성장 가능성 확보', val: 'M' },
-      { label: '대형 (5진료실 이상)', desc: '복합 센터형, 높은 초기 투자 감수', val: 'L' },
+      { label:          1~2진료실)', desc: '집중 진료, 초기 비용 최소화 지향', val: 'S' },
+      { label:          3~4진료실)', desc: '균형 잡힌 운영, 성장 가능성 확보', val: 'M' },
+      { label:         (5      실 이      ',        c: '복합 센터형, 높은 초기 투자 감수', val:         },
     ]
   },
   {
-    area: '규모 · 시설', num: '2 / 9',
-    text: '입원실 운영에 대한 의지는 어느 정도입니까?',
-    sub: '한방 병원 전환 가능성을 포함하여 선택해 주세요.',
+    area: '규모 ·          num: '2 / 9',
+    text: '입원실 운영에 대한         어느 정도입니까?',
+           : '한방 병원 전환          포함하여 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '입원실 운영 계획 없음', desc: '외래 집중형 운영 선호', val: 'no' },
-      { label: '향후 확장 시 고려', desc: '현재는 외래 중심, 추후 검토', val: 'maybe' },
-      { label: '처음부터 입원실 포함', desc: '병원급 또는 요양급 지향', val: 'yes' },
+      { l          '입원실 운영 계획 없음', desc: '외래 집중형 운영 선호', val: 'no' },
+      { label:          장 시 고려', desc: '현재는 외래 중심, 추후 검토', val: 'maybe' },
+      { la         '      부터       실          desc: '병원급 또는 요양급 지향', val: 'y        },
     ]
   },
   {
-    area: '규모 · 시설', num: '3 / 9',
-    text: '개원 초기 인테리어 및 시설에 투자할 의향은?',
-    sub: '3.3㎡(평) 기준 인테리어 투자 성향입니다.',
+    area: '규모 · 시        num: '3 / 9',
+    text: '개원 초기 인테리        시설에 투자할 의향은?',
+         ub: '3.3㎡(평          테리어 투자 성향입니다.',
     type: 'choice',
     options: [
-      { label: '최소 투자형 (100만원 미만/평)', desc: '기능 위주, 실용적 인테리어 선호', val: 'low' },
-      { label: '표준 투자형 (100~200만원/평)', desc: '브랜드와 실용성의 균형', val: 'mid' },
-      { label: '프리미엄 투자형 (200만원 이상/평)', desc: '공간 자체가 브랜드, 고급화 지향', val: 'high' },
+      { label: '최소 투자형            미만/평)', desc: '기능 위주, 실용적 인테리어 선호', val: 'low' },
+      { label: '표준          100~200만원/평)', desc: '브랜드와 실용성의 균형', val: 'mid' },
+      { label: '프리미엄 투자형 (        원       /평)       desc: '공간 자체      브랜        급화 지향', val: 'high' },
     ]
-  },
-  // 입지/환경 (3)
+           // 입지/환경 (3)
   {
-    area: '입지 · 환경', num: '4 / 9',
-    text: '선호하는 개원 상권은 어느 유형입니까?',
-    sub: '진료 모델과 가장 잘 맞는 입지를 선택해 주세요.',
+    area: '입지        경', num: '4 / 9',
+    text: '선호하는 개원         어느 유형입니까?',
+           : '진료 모델과 가           입지를 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '주거 밀집 지역', desc: '아파트 단지, 생활 밀착형 상권', val: 'residential' },
-      { label: '도심 / 역세권', desc: '유동인구 풍부, 직장인 유입 가능', val: 'urban' },
-      { label: '의료 복합 상권', desc: '병원 밀집지, 전문 진료 이미지 구축', val: 'medical' },
-    ]
-  },
-  {
-    area: '입지 · 환경', num: '5 / 9',
-    text: '주력 타겟으로 삼고 싶은 환자군은?',
-    sub: '주요 수익원이 될 핵심 환자 유형입니다.',
-    type: 'choice',
-    options: [
-      { label: '영유아 · 소아 (성장/비염)', desc: '부모 만족도가 재방문율 결정', val: 'kids' },
-      { label: '2030 직장인 (통증/피로)', desc: '빠른 치료 효과, SNS 구전 활발', val: 'young' },
-      { label: '4060 중장년 (만성질환)', desc: '장기 관리형, CRM 중심 운영', val: 'senior' },
+      { label: '주거           , desc: '아파트 단지, 생활 밀착형 상권', val: 'residential' },
+      { label:           역세권', desc: '유동인구 풍부, 직장인 유입 가능', val: 'urban' },
+      { label: '의료        상권       de      :         밀집지, 전문 진료 이미지 구축', val: 'medic        },
     ]
   },
   {
-    area: '입지 · 환경', num: '6 / 9',
-    text: '주력으로 활용할 마케팅 채널은?',
-    sub: '초기 환자 유입 전략의 핵심을 선택해 주세요.',
+    area: '         환경', num: '5 / 9',
+    text: '        겟으로 삼고 싶은 환자군은?'          sub: '주요            핵심 환자 유형입니다.',
     type: 'choice',
     options: [
-      { label: '온라인 (SNS/블로그/광고)', desc: '디지털 퍼스트, 전환율 측정 용이', val: 'online' },
-      { label: '지역 커뮤니티 / 오프라인', desc: '입소문 기반, 진성 환자 확보', val: 'offline' },
-      { label: '병원 리뷰 플랫폼 (네이버/카카오)', desc: '검색 점령형, SEO 중심 전략', val: 'review' },
-    ]
-  },
-  // 진료/전략 (3)
-  {
-    area: '진료 · 전략', num: '7 / 9',
-    text: '주요 수익 모델의 구성은 어떻게 계획하십니까?',
-    sub: '보험 진료 vs 비급여 진료 비율 방향성입니다.',
-    type: 'choice',
-    options: [
-      { label: '보험 진료 중심 (70% 이상)', desc: '안정적 내원 확보, 단가 낮은 편', val: 'insurance' },
-      { label: '보험+비급여 혼합 (50:50)', desc: '균형형, 진료 다양성 확보', val: 'mixed' },
-      { label: '비급여 중심 (70% 이상)', desc: '고단가 진료, 마케팅 의존도 높음', val: 'premium' },
+      { label: '영유           (성장/비염)', desc: '부모 만족도가 재방문율 결정', val: 'kids' },
+      { label: '2030 직장          피로)', desc: '빠른 치료 효과, SNS 구전 활발', val: 'young' },
+      { label: '4060         (만      환)'      de        '장기 관리형, CRM 중심 운영', val: 'seni        },
     ]
   },
   {
-    area: '진료 · 전략', num: '8 / 9',
-    text: '본인의 한의학적 진료 스타일은?',
-    sub: '환자와의 관계 설정 방식을 선택해 주세요.',
+    area:         · 환경', num: '6 / 9',
+    text: '주        활용할 마케팅 채널은?',
+         ub: '초기 환자            핵심을 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '침 · 추나 중심 처치형', desc: '빠른 효과 제공, 회전율 중시', val: 'treatment' },
-      { label: '탕약 · 보약 처방형', desc: '장기 관리, 신뢰 기반 매출 형성', val: 'herbal' },
-      { label: '복합 프로그램형', desc: '패키지 설계, 비급여 중심 운영', val: 'program' },
+      { label: '온라인 (SN          광고)', desc: '디지털 퍼스트, 전환율 측정 용이', val: 'online' },
+      { label: '지역 커          오프라인', desc: '입소문 기반, 진성 환자 확보', val: 'offline' },
+      { label: '병원 리뷰 플랫폼        버/      오)'      desc: '검색 점령형      SE         전략', val: 'review' },
+    ]
+           // 진료/전략 (3)
+  {
+    area: '진료 · 전        num: '7 / 9',
+    text: '주요 수익 모델의         어떻게 계획하십니까?',
+          b: '보험 진료 v          진료 비율 방향성입니다.',
+    type: 'choice',
+    options: [
+      { label: '보험 진료 중심 (7          ', desc: '안정적 내원 확보, 단가 낮은 편', val: 'insurance' },
+      { label: '보험+           (50:50)', desc: '균형형, 진료 다양성 확보', val: 'mixed' },
+      { label: '비급여 중심          이      ',       sc        단가 진료, 마케팅 의존도 높음', val: 'premi        },
     ]
   },
   {
-    area: '진료 · 전략', num: '9 / 9',
-    text: '지향하는 브랜드 형태는?',
-    sub: '중장기 병원 아이덴티티 방향을 선택해 주세요.',
+    area:         · 전략', num: '8 / 9',
+    text:          한의학적 진료 스타일은?',         sub: '환자와의           방식을 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '전문 특화 한의원', desc: '척추/성장/난임 등 1~2개 분야 집중', val: 'specialist' },
-      { label: '동네 주치의형 한의원', desc: '친근함과 신뢰, 생활 밀착 케어', val: 'gp' },
-      { label: '프리미엄 웰니스 클리닉', desc: '고급 이미지, 체험·감성 마케팅', val: 'premium' },
+      { label: '침 · 추          치형', desc: '빠른 효과 제공, 회전율 중시', val: 'treatment' },
+      { label: '탕약          처방형', desc: '장기 관리, 신뢰 기반 매출 형성', val: 'herbal' },
+      { label:         프로      형',      es        패키지 설계, 비급여 중심 운영', val: 'progr        },
     ]
+  },
+  {
+    a         '진료 · 전략', num: '9 / 9',
+    text        향하는 브랜드 형태는?',
+         ub: '중장기 병원           방향을 선택해 주세요.',
+    type: 'choice',
+    options: [
+      { label: '전문 특화 한          esc: '척추/성장/난임 등 1~2개 분야 집중', val: 'specialist' },
+      { label          주치의형 한의원', desc: '친근함과 신뢰, 생활 밀착 케어', val: 'gp' },
+      { label: '프리미        스       닉'    , de    sc: '고급 이미지, 체험·감성 마케팅', val: 'premium' },
+        ]
   }
 ];
 
-// ─────────────────────────────────────────
-// ROUTE B: 3 BASIC + 18 SCALE QUESTIONS
-// ─────────────────────────────────────────
-const questionsB_basic = [
+// ──────────────────────────    ───────────────
+// ROUTE B: 3 BASIC + 18 SCAL    E QUESTIONS
+// ────────────      ──        ─────────────────────
+const ques        sB_basic = [
   {
-    area: '기본 수치', num: '기본 1 / 3',
-    text: '현재 한의원의 월 매출 구간은?',
-    sub: '가장 근접한 구간을 선택해 주세요.',
+    area:         수치', num: '기본 1 / 3',
+    te        '현재 한의원의 월 매출 구간        
+    sub: '           구간을 선택해 주세요.',
     type: 'choice',
     options: [
-      { label: '3천만원 미만', val: 'r1', desc: '초기 성장 단계' },
-      { label: '3천만원 ~ 5천만원', val: 'r2', desc: '안정화 단계' },
-      { label: '5천만원 ~ 8천만원', val: 'r3', desc: '성장 가속 단계' },
-      { label: '8천만원 이상', val: 'r4', desc: '고성과 단계' },
+          { label: '3천만원 미만', val: 'r1', desc: '초기 성장 단계' },
+            label: '3천만원 ~ 5천만원', val: 'r2', desc: '안정화 단계' },
+              bel: '5천만원 ~ 8천만원', val: 'r3', desc: '성장 가속 단계' }                { l      el        천만원 이상', val: 'r4', desc: '고성과 단        ,
     ]
   },
   {
-    area: '기본 수치', num: '기본 2 / 3',
-    text: '일평균 내원객 수는 몇 명입니까?',
-    sub: '진료일 기준 하루 평균입니다.',
+    area: '        치', num: '기본 2 / 3',
+            : '일평균 내원객 수는 몇         ?',
+    sub           기준 하루 평균입니다.',
     type: 'choice',
-    options: [
-      { label: '20명 미만', val: 'v1', desc: '' },
-      { label: '20명 ~ 40명', val: 'v2', desc: '' },
-      { label: '40명 ~ 60명', val: 'v3', desc: '' },
-      { label: '60명 이상', val: 'v4', desc: '' },
+    op           [
+      { label: '20명 미만', val: 'v1', desc:                 { label: '20명 ~ 40명', val: 'v2', desc:                 { label: '40명 ~ 60명', val: 'v3', des        '       
+                  bel: '60명 이상', val: 'v4', desc:         ,
     ]
   },
   {
-    area: '기본 수치', num: '기본 3 / 3',
-    text: '6개월 후 달성하고 싶은 월 매출 목표는?',
-    sub: '솔직한 목표를 자유롭게 입력해 주세요.',
-        type: 'choice',
+    area: '기본 수치        um: '기본 3 / 3',
+    text: '6개월        성하고 싶은 월 매출 목표는?',
+         ub: '솔직한 목표를 자유롭게 입력해 주세      ',    
+            type: 'choice',
         options: [
-          { label: '3천만원 ~ 5천만원', val: 'g1', desc: '안정화 초기 단계' },
+          { lab    el: '3천만원 ~ 5천만원', val: 'g1       desc: '안정      초기 단계' },
           { label: '6천만원 ~ 9천만원', val: 'g2', desc: '성장 가속화 단계' },
           { label: '1억 ~ 1억 5천만원', val: 'g3', desc: '고성장 진입 단계' },
-          { label: '1억 6천만원 ~ 2억', val: 'g4', desc: '탁월한 성과 단계' },
+              { label: '1억 6천만원 ~ 2억', val: 'g4', desc: '탁월한 성과 단계' },
           { label: '2억 이상', val: 'g5', desc: '최상위 퍼포먼스 단계' },
         ],
   }
 ];
-
-const areasB = ['CS', '마케팅', 'HR', '진료', 'CRM', '비전'];
+      onst areasB = ['CS', '마케팅', 'HR', '진료', 'CRM', '비전'];
 const questionsB_scale = [
   // CS (3)
-  { area: 'CS · 고객서비스', num: '진단 1 / 18', text: '초진 환자 응대부터 귀가까지, 전반적인 CS 프로세스가 체계적으로 운영되고 있습니까?', sub: '1점: 거의 없음 / 5점: 완벽히 갖춰짐', areaKey: 'CS' },
-  { area: 'CS · 고객서비스', num: '진단 2 / 18', text: '직원들의 환자 응대 서비스 교육 및 피드백이 정기적으로 이루어지고 있습니까?', sub: '1점: 전혀 없음 / 5점: 매월 정기 실시', areaKey: 'CS' },
-  { area: 'CS · 고객서비스', num: '진단 3 / 18', text: '환자 불만 접수 및 개선 프로세스가 명확히 수립되어 실행되고 있습니까?', sub: '1점: 없음 / 5점: 완전 체계화', areaKey: 'CS' },
+  { area: 'CS · 고객서비스', num: '진단 1 / 18',      ext: '초진 환자      대부터 귀가까지, 전반적인 CS 프로세스가 체계적으로 운영되고 있습니까?', sub: '1점: 거의 없음 / 5점: 완벽히 갖춰짐', areaKey: 'CS' },
+  { area: 'CS · 고객서비스', num: '진단 2 / 18', text: '직원들의 환      응대 서비스 교육 및 피드백이 정기적으로 이루어지고 있습니까?', sub: '1점: 전혀 없음 / 5점: 매월 정기 실시', areaKey: 'CS' },
+  { area: 'CS · 고객서비스', num: '진단 3 / 18', text:       자 불만 접수 및 개선 프로세스가 명확히 수립되어 실행되고 있습니까?', sub: '1점: 없음 / 5점: 완전 체계화', areaKey: 'CS' },
   // 마케팅 (3)
-  { area: '마케팅 · 브랜드', num: '진단 4 / 18', text: '온·오프라인 마케팅 채널이 전략적으로 운영되어 신규 환자가 꾸준히 유입되고 있습니까?', sub: '1점: 거의 없음 / 5점: 체계적 운영 중', areaKey: '마케팅' },
-  { area: '마케팅 · 브랜드', num: '진단 5 / 18', text: '한의원만의 차별화된 브랜드 스토리와 비주얼 아이덴티티가 구축되어 있습니까?', sub: '1점: 없음 / 5점: 완전 구축', areaKey: '마케팅' },
-  { area: '마케팅 · 브랜드', num: '진단 6 / 18', text: '마케팅 예산 대비 신환 유입 비용(CPL)을 측정하고 최적화하고 있습니까?', sub: '1점: 측정 안 함 / 5점: 지속 최적화', areaKey: '마케팅' },
+  { area: '마케팅 · 브랜드', num: '진단 4 / 18',       xt: '온·오프라      마케팅 채널이 전략적으로 운영되어 신규 환자가 꾸준히 유입되고 있습니까?', sub: '1점: 거의 없음 / 5점: 체계적 운영 중', areaKey: '마케팅' },
+  { area: '마케팅 · 브랜드', num: '진단 5 / 18       text: '한의원만의 차별화된 브랜드 스토리와 비주얼 아이덴티티가 구축되어 있습니까?', sub: '1점: 없음 / 5점: 완전 구축', areaKey: '마케팅' },
+  { area: '마케팅 · 브랜드', num: '진단 6 /      8', text: '마케팅 예산 대비 신환 유입 비용(CPL)을 측정하고 최적화하고 있습니까?', sub: '1점: 측정 안 함 / 5점: 지속 최적화', areaKey: '마케팅' },
   // HR (3)
-  { area: 'HR · 인사관리', num: '진단 7 / 18', text: '직원 채용, 온보딩, 교육 시스템이 체계적으로 운영되고 있습니까?', sub: '1점: 비정형적 / 5점: 완전 체계화', areaKey: 'HR' },
-  { area: 'HR · 인사관리', num: '진단 8 / 18', text: '직원들의 업무 역할(R&R)과 평가 기준이 명확히 정의되어 있습니까?', sub: '1점: 없음 / 5점: 문서화 완료', areaKey: 'HR' },
-  { area: 'HR · 인사관리', num: '진단 9 / 18', text: '직원 만족도 및 이직률이 업계 평균 수준 이하로 관리되고 있습니까?', sub: '1점: 이직률 매우 높음 / 5점: 안정적', areaKey: 'HR' },
+  { area: 'HR · 인사      ', num: '진      7 / 18', text: '직원 채용, 온보딩, 교육 시스템이 체계적으로 운영되고 있습니까?', sub: '1점: 비정형적 / 5점: 완전 체계화', areaKey: 'HR' },
+  { area: 'HR · 인사관리', num: '진단 8       18', text: '직원들의 업무 역할(R&R)과 평가 기준이 명확히 정의되어 있습니까?', sub: '1점: 없음 / 5점: 문서화 완료', areaKey: 'HR' },
+  { area: 'HR · 인사관리', num: '진단 9 / 18',      ext: '직원 만족도 및 이직률이 업계 평균 수준 이하로 관리되고 있습니까?', sub: '1점: 이직률 매우 높음 / 5점: 안정적', areaKey: 'HR' },
   // 진료 (3)
-  { area: '진료 · 시스템', num: '진단 10 / 18', text: '초진 환자의 치료 계획(진료 로드맵)이 체계적으로 수립·공유되고 있습니까?', sub: '1점: 없음 / 5점: 완전 체계화', areaKey: '진료' },
-  { area: '진료 · 시스템', num: '진단 11 / 18', text: '주력 비급여 프로그램의 환자 치료 성과(효과)를 측정하고 데이터화하고 있습니까?', sub: '1점: 없음 / 5점: 정기 데이터화', areaKey: '진료' },
-  { area: '진료 · 시스템', num: '진단 12 / 18', text: '진료 표준화 프로토콜이 마련되어 원장 부재 시에도 일관된 진료가 가능합니까?', sub: '1점: 없음 / 5점: 완전 표준화', areaKey: '진료' },
+  { area: '진료 · 시스템', num: '진      10 / 18', t      t: '초진 환자의 치료 계획(진료 로드맵)이 체계적으로 수립·공유되고 있습니까?', sub: '1점: 없음 / 5점: 완전 체계화', areaKey: '진료' },
+  { area: '진료 · 시스템', num: '진단 11 / 18', text: '주력      급여 프로그램의 환자 치료 성과(효과)를 측정하고 데이터화하고 있습니까?', sub: '1점: 없음 / 5점: 정기 데이터화', areaKey: '진료' },
+  { area: '진료 · 시스템', num: '진단 12 / 18', text: '진료       화 프로토콜이 마련되어 원장 부재 시에도 일관된 진료가 가능합니까?', sub: '1점: 없음 / 5점: 완전 표준화', areaKey: '진료' },
   // CRM (3)
-  { area: 'CRM · 환자관리', num: '진단 13 / 18', text: '기존 환자의 재방문율과 이탈률을 정기적으로 분석하고 개선 조치를 취하고 있습니까?', sub: '1점: 없음 / 5점: 정기 분석 중', areaKey: 'CRM' },
-  { area: 'CRM · 환자관리', num: '진단 14 / 18', text: '환자별 치료 이력과 선호를 바탕으로 개인화된 후속 관리가 이루어지고 있습니까?', sub: '1점: 없음 / 5점: 개인화 완료', areaKey: 'CRM' },
-  { area: 'CRM · 환자관리', num: '진단 15 / 18', text: '휴면 환자 재활성화 캠페인이나 환자 추천(리퍼럴) 프로그램이 운영 중입니까?', sub: '1점: 없음 / 5점: 정기 운영', areaKey: 'CRM' },
+  { area: 'CRM · 환자관리', num: '진단 13 / 18       text: '기존      자의 재방문율과 이탈률을 정기적으로 분석하고 개선 조치를 취하고 있습니까?', sub: '1점: 없음 / 5점: 정기 분석 중', areaKey: 'CRM' },
+  { area: 'CRM · 환자관리', num: '진단 14 / 18', text      '환자별 치료 이력과 선호를 바탕으로 개인화된 후속 관리가 이루어지고 있습니까?', sub: '1점: 없음 / 5점: 개인화 완료', areaKey: 'CRM' },
+  { area: 'CRM · 환자관리', num: '진단 15 / 18', t      t: '휴면 환자 재활성화 캠페인이나 환자 추천(리퍼럴) 프로그램이 운영 중입니까?', sub: '1점: 없음 / 5점: 정기 운영', areaKey: 'CRM' },
   // 비전 (3)
-  { area: '비전 · 성장전략', num: '진단 16 / 18', text: '1년, 3년, 5년 단위의 명확한 경영 목표와 성장 로드맵이 수립되어 있습니까?', sub: '1점: 없음 / 5점: 완전 수립', areaKey: '비전' },
-  { area: '비전 · 성장전략', num: '진단 17 / 18', text: '분원 확장, 법인화, 프랜차이즈 등 스케일업 전략을 검토한 적이 있습니까?', sub: '1점: 생각 없음 / 5점: 실행 중', areaKey: '비전' },
-  { area: '비전 · 성장전략', num: '진단 18 / 18', text: '원장님 개인 브랜드(퍼스널 브랜딩)와 한의원 브랜드의 연계 전략이 존재합니까?', sub: '1점: 없음 / 5점: 완전 연계', areaKey: '비전' },
+  { area: '비전 · 성장전략', num: '진단     16     / 18', text: '1년, 3년, 5년 단위의 명확한 경영 목표와 성장 로드    맵이 수립되어 있습니까?', sub: '1점: 없    음 / 5점: 완전 수립', areaKey: '비전' },
+  { area: '비    전 · 성장전략', num: '진단      7 / 18', text: '분원       , 법인화, 프랜차이즈 등 스케일업 전략        한 적이 있습니까?', sub: '1점: 생각 없음 / 5점: 실행 중',         Key: '비전' },
+  { area: '비전 · 성장전략', num: '진단 18 / 18', text: '원장님 개인 브랜        널 브랜딩)와 한의원 브랜드의 연계 전략이 존재합니까?', sub: '1점: 없음 / 5점: 완전 연계',        aKey: '비전' },
 ];
 
-// ─────────────────────────────────────────
-// PERSONAS (Route A: 12개)
-// ─────────────────────────────────────────
-const personas = {
+// ───────────────────────────────────────        / PERSONAS (Route A: 12개)
+// ─────────────────────────────────────────        st personas = {
   // 규모별 × 전략별 조합 매핑
-  getPersona(answers) {
-    const scale = answers[0] || 'M'; // S/M/L
-    const revenueModel = answers[6] || 'mixed'; // insurance/mixed/premium
-    const brand = answers[8] || 'gp'; // specialist/gp/premium
-    const target = answers[4] || 'senior'; // kids/young/senior
-    const style = answers[7] || 'treatment'; // treatment/herbal/program
-
-    if (scale === 'S' && revenueModel === 'insurance') {
-      if (target === 'kids') return 'A1';
+  getPersona(ans          {
+    const scale = answers[0] || 'M          S/M/L
+    const revenueModel = answers           'mixed'; //         ra        mixed/premium
+    const brand = answers[8] || 'gp'; // specialis        /premium
+    const target = answers[4] || 'senior'; // kid        ung/senior
+    const style = answers[7]          reatment'; // treatment/herbal/progra           if (scale ==        '         evenueModel === 'insurance') {
+      if (target === 'ki         return 'A1';
       if (target === 'senior') return 'A2';
-      return 'A3';
+            turn 'A3';
     }
-    if (scale === 'S' && revenueModel !== 'insurance') return 'A4';
-    if (scale === 'M' && brand === 'specialist') return 'B1';
-    if (scale === 'M' && brand === 'gp') {
-      if (style === 'herbal') return 'B2';
+    if (scale === 'S' && revenueModel         'insurance') return 'A4';
+    i        cale === 'M'        b    rand     === 'specialist') ret      n 'B1'          if (scale === 'M' &&        nd === 'gp')             if (style === 'herbal') retur        2';
       return 'B3';
     }
-    if (scale === 'M' && brand === 'premium') return 'B4';
+           (scale === 'M' && brand === 'premium') return 'B4';
     if (scale === 'L' && revenueModel === 'premium') return 'C1';
-    if (scale === 'L' && style === 'herbal') return 'C2';
+    if (scale === 'L' && style ==        erbal') return 'C2';
     if (scale === 'L') return 'C3';
     return 'B3';
   }
@@ -1337,410 +1603,382 @@ const personaData = {
     name: '소아 전문 지역 밀착형',
     emoji: '👶',
     tagline: '작지만 강한, 소아·성장 전문 한의원',
-    tags: ['소형', '보험 중심', '소아·성장'],
-    dna: `귀원은 소규모 공간에서 소아·성장 분야를 특화하여 지역 내 독보적인 포지셔닝을 구축할 수 있는 유형입니다. 영유아부터 초등학생까지 성장 발달, 비염, 아토피 등 소아 전문 진료에 집중함으로써 '우리 동네 소아 한의원'으로 강력한 브랜드 자산을 형성합니다.`,
-    strategy: `초기 개원지는 아파트 단지 인근 상가 1층 또는 학원가 인접 지역이 최적입니다. 부모 커뮤니티(맘카페, 동네 앱)를 통한 입소문 마케팅과 인근 소아청소년과·이비인후과와의 협진 네트워크 구축이 핵심 초기 전략입니다. 보험 진료로 내원 장벽을 낮추되, 성장 프로그램·성장탕 등 비급여를 점진적으로 추가해 단가를 높여가야 합니다.`,
-    marketing: `① 개원 전 3개월: 지역 맘카페 정보 콘텐츠 연재 (성장판, 소아 면역 등)\n② 개원 후 1개월: 초진 검진 이벤트로 DB 확보\n③ 2~6개월: 블로그·네이버 플레이스 SEO 집중, 후기 마케팅\n④ 6개월 이후: 성장 패키지 프로그램 론칭, 정기 관리 환자 전환`,
-    risk: `경쟁 리스크: 소아과·이비인후과와의 진료 영역 혼재가 발생할 수 있습니다. 한의학적 치료의 차별점(비약물 치료, 체질 개선)을 일관되게 커뮤니케이션하고, 급성기 질환은 양방 이송, 만성·체질 개선은 한방으로 역할을 명확히 해야 합니다.`
+           s: ['소형', '보험 중심', '소아·성장'],
+    dna: `귀원은 소규모 공간에서 소아·성장 분야를 특화하여 지역 내 독보적인 포지셔닝을 구축할 수 있는 유형입니다. 영유아부터 초등학생까지 성장 발달, 비염, 아토피 등 소아 전문 진료에 집중함으로써 '우리 동네 소아 한의원'으로 강력        드 자산을 형성합니다.`,
+    strategy: `초기 개원지는 아파트 단지 인근 상가 1층 또는 학원가 인접 지역이 최적입니다. 부모 커뮤니티(맘카페, 동네 앱)를 통한 입소문 마케팅과 인근 소아청소년과·이비인후과와의 협진 네트워크 구축이 핵심        전략      다. 보험         내원 장벽을 낮추되, 성장 프로그램·성장탕         여를 점진적으로 추가해         높여가야 합니다.`,
+    marketing: `① 개        3개월: 지역 맘카페 정보 콘텐츠 연재 (성장판, 소아 면역         ② 개원 후 1개월: 초진 검진 이벤트로 DB 확보\n③ 2~6개월: 블로그·네이버 플레이스 SEO 집중, 후기 마케팅\n④ 6개월 이후: 성장 패키지 프로그램 론칭, 정기 관리 환자 전환`,
+    risk: `경쟁 리스크: 소아과·이비인후과와의         역 혼재가 발생할 수 있습니다. 한의학적 치료의 차별점(비약물 치료, 체질 개선)을 일관되게 커뮤니케이션하고, 급성기 질환은 양방 이송, 만성·체질 개선은 한방으로 역할을 명확히 해야 합니다.`
   },
   A2: {
-    name: '중장년 만성질환 관리 전문',
+    name: '중장년 만성질환        전문',
     emoji: '🏠',
     tagline: '믿을 수 있는 동네 주치의 한의원',
     tags: ['소형', '보험 중심', '4060 만성'],
-    dna: `귀원은 지역 내 4060 중장년층의 만성 통증 및 대사질환을 장기적으로 관리하는 '동네 주치의 한의원' 모델입니다. 보험 진료를 기반으로 내원 문턱을 낮추고, 장기 내원 환자를 탕약·보약 처방으로 전환하여 안정적인 매출을 구축합니다.`,
-    strategy: `주거 밀집지역 상가 내 접근성 좋은 1~2층 입지가 필수입니다. CRM 시스템을 통한 장기 환자 관리와 재방문 유도가 핵심 경쟁력입니다. 지역 노인복지관, 건강보험공단 사업 연계 등 오프라인 커뮤니티 활동으로 신뢰를 구축하세요.`,
-    marketing: `① 개원 초기: 지역 전단지 + 주변 약국·복지관 네트워크 구축\n② 3개월: 네이버 플레이스 최적화, 리뷰 적극 수집\n③ 6개월: 정기 검진 프로그램 론칭 (체성분 분석, 건강 상담)\n④ 1년: 입소문 기반 환자 추천 프로그램 운영`,
-    risk: `단가 리스크: 보험 위주 진료 구조에서는 내원객 수가 곧 매출입니다. 일평균 내원객 35명 이상을 목표로 하되, 탕약 처방 전환율을 30% 이상 확보하지 못할 경우 손익분기점 달성에 어려움이 생깁니다.`
+    dna: `귀원은 지역 내 4060 중장년층의 만성 통증 및 대사질환을 장기적으로 관리        동네 주치의 한의원' 모델입니다. 보험 진료를 기반으로 내원 문턱을 낮추고, 장기 내원 환자를 탕약·보약 처방으로 전환하여 안정적인 매출을 구축합니다.`,
+    strategy: `주거 밀집지역 상가 내 접근성 좋은      ~2층      지가 필수입        CRM 시스템을 통한 장기 환자 관리와 재방문         핵심 경쟁력입니다. 지역        지관, 건강보험공단 사업 연계 등 오프라인 커뮤니티 활동으        를 구축하세요.`,
+    marketing: `① 개원 초기:        전단지 + 주변 약국·복지관 네트워크 구축\n② 3개월: 네이버 플레이스 최적화, 리뷰 적극 수집\n③ 6개월: 정기 검진 프로그램 론칭 (체성분 분석, 건강 상담)\n④ 1년: 입소문 기반 환자 추천 프로그램 운영`,
+    risk:         리스크: 보험 위주 진료 구조에서는 내원객 수가 곧 매출입니다. 일평균 내원객 35명 이상을 목표로 하되, 탕약 처방 전환율을 30% 이상 확보하지 못할 경우 손익분기점 달성에 어려움이 생깁니다.`
   },
   A3: {
-    name: '2030 직장인 통증케어 전문',
+    name: '2030 직장인 통        전문',
     emoji: '💼',
     tagline: '빠르고 효과적인 직장인 전문 한의원',
     tags: ['소형', '보험 기반', '2030 직장인'],
-    dna: `귀원은 역세권 또는 오피스 밀집지에서 2030 직장인의 급성 통증과 피로 회복을 빠르게 해결해주는 '스피드 케어' 전문 한의원 유형입니다. 단기 치료 효과를 강조하며 SNS 리뷰와 구전 마케팅이 핵심 성장 엔진이 됩니다.`,
-    strategy: `역세권 오피스텔 상가 또는 오피스 밀집지 1층 입지가 최적입니다. 점심시간·퇴근시간 운영 최적화, 예약 앱 연동, 대기 최소화 시스템 구축이 필수입니다. 초진부터 치료 성과를 체감하게 하는 '첫 방문 WOW 경험'이 바이럴의 원천입니다.`,
-    marketing: `① 인스타그램·숏폼 콘텐츠: 거북목, 허리통증 셀프케어 영상\n② 카카오 예약 연동 + 네이버 진료예약 최적화\n③ 후기 이벤트: 첫 방문 할인 + 구글/네이버 리뷰 작성 리워드\n④ 직장 단체 계약: 인근 기업 복지 제휴 검토`,
-    risk: `이탈 리스크: 통증이 해소되면 자연스럽게 이탈하는 구조입니다. 치료 종결 후 정기 체크업(월 1~2회) 및 체질 관리 프로그램으로 재방문 구조를 의도적으로 설계해야 합니다.`
-  },
+    dna: `귀원은 역세권 또는 오피스 밀집지에서 2030 직장인의 급성 통        로 회복을 빠르게 해결해주는 '스피드 케어' 전문 한의원 유형입니다. 단기 치료 효과를 강조하며 SNS 리뷰와 구전 마케팅이 핵심 성장 엔진이 됩니다.`,
+    strategy: `역세권      피스텔      가 또는 오        집지 1층 입지가 최적입니다. 점심시간·퇴근        영 최적화, 예약 앱         대기 최소화 시스템 구축이 필수입니다. 초진부터 치료 성과를 체        하는 '첫 방문 WOW 경험'이 바이럴의 원천입니다.`,
+          rketing: `① 인스타그램·숏폼 콘텐츠: 거북목, 허리통증 셀프케어 영상\n② 카카오 예약 연동 + 네이버 진료예약 최적화\n③ 후기 이벤트: 첫 방문 할인 + 구글/네이버 리뷰 작성 리워드\n④ 직장         약: 인근 기업 복지 제휴 검토`,
+    risk: `이탈 리스크: 통증이 해소되면 자연스럽게 이탈하는 구조입니다. 치료 종결 후 정기 체크업(월 1~2회) 및 체질 관리 프로그램으로 재방문 구조를 의도적으로 설계해야 합니다.`        ,
   A4: {
     name: '소형 프리미엄 비급여 전문',
     emoji: '✨',
     tagline: '작은 공간, 높은 단가의 프리미엄 한의원',
-    tags: ['소형', '비급여 중심', '고단가 진료'],
-    dna: `귀원은 소규모 공간에서 고단가 비급여 진료에 집중하여 높은 수익성을 추구하는 유형입니다. 환자 수보다 단가에 집중하며, 체계적인 프로그램 설계와 강력한 원장 퍼스널 브랜딩이 성공의 핵심입니다.`,
-    strategy: `한적하지만 고급스러운 주거지역 또는 강남권 소규모 공간이 최적입니다. 예약제 전용 운영으로 대기 없는 VIP 경험을 제공하세요. SNS 기반 퍼스널 브랜딩과 강의·방송 활동으로 전문가 이미지를 구축합니다.`,
-    marketing: `① 원장님 인스타그램/유튜브 채널 개설 (전문성 콘텐츠)\n② 뷰티·웰니스 업계 콜라보 마케팅\n③ 소수 정예 VIP 프로그램 설계 (피부·다이어트·항노화)\n④ 방송/강의 활동으로 권위 형성`,
-    risk: `의존 리스크: 원장님 개인 브랜드에 지나치게 의존할 경우, 원장님 부재 시 매출이 급락할 수 있습니다. 시스템화된 진료 프로토콜과 상담사 활용으로 원장 의존도를 단계적으로 낮춰야 합니다.`
+    tags: ['소형', '비급여 중심', '고        료'],
+    dna: `귀원은 소규모 공간에서 고단가 비급여 진료에 집중하여 높은 수익성을 추구하는 유형입니다. 환자 수보다 단가에 집중하며, 체계적인 프로그램 설계와 강력한 원장 퍼스널 브랜딩이 성       핵심      다.`,
+         trategy: `한적하지만 고급스러운          또는 강남권 소규모 공        적입니다. 예약제 전용 운영으로 대기 없는 VIP 경험을 제공하세요.         기반 퍼스널 브랜딩과 강의·방송 활동으로 전문가 이미지를         다.`,
+    marketing: `① 원장님 인스타그램/유튜브 채널 개설 (전문성 콘텐츠)\n② 뷰티·웰니스 업계 콜라보 마케팅\n③ 소수 정예 VIP 프로그램 설계 (피부·다이어트·항노화)\n④ 방송/강의 활동으로 권위 형성           risk: `의존 리스크: 원장님 개인 브랜드에 지나치게 의존할 경우, 원장님 부재 시 매출이 급락할 수 있습니다. 시스템화된 진료 프로토콜과 상담사 활용으로 원장 의존도를 단계적으로 낮춰야 합니다.`
   },
   B1: {
-    name: '중형 전문 특화 성장형',
+    name: '중형         화 성장형',
     emoji: '🎯',
     tagline: '선택과 집중으로 지역 1등을 노리는 전문 한의원',
     tags: ['중형', '전문 특화', '성장 지향'],
-    dna: `귀원은 3~4진료실 규모에서 특정 진료 영역(척추, 불임, 안면마비 등)에 집중하여 지역 내 전문 브랜드를 구축하는 성장형 한의원입니다. 전문화는 마케팅 비용을 줄이고 환자 신뢰를 높이는 가장 효율적인 전략입니다.`,
-    strategy: `전문 분야 선택 후, 해당 질환 환자가 많이 검색하는 키워드 중심 SEO 전략을 병행합니다. 학술 활동(논문, 학회 발표)이나 미디어 출연으로 전문가 이미지를 강화하세요. 전문 분야 외 진료는 제한하여 브랜드 희석을 막아야 합니다.`,
-    marketing: `① 전문 질환 블로그/유튜브 콘텐츠 제작\n② 해당 질환 커뮤니티 내 전문가로 인지도 형성\n③ 타 의료기관과의 협진 네트워크 (연계 전원 시스템)\n④ 학술·강의 활동으로 B2B 레퍼런스 확보`,
+    dna: `귀원은 3~4진료        에서 특정 진료 영역(척추, 불임, 안면마비 등)에 집중하여 지역 내 전문 브랜드를 구축하는 성장형 한의원입니다. 전문화는 마케팅 비용을 줄이고 환자 신뢰를 높이는 가장 효율       전략      다.`,
+         trategy: `전문 분야 선택 후, 해         환자가 많이 검색하는         중심 SEO 전략을 병행합니다. 학술 활동(논문, 학회 발표)이나         출연으로 전문가 이미지를 강화하세요. 전문 분야 외 진료는        여 브랜드 희석을 막아야 합니다.`,
+    marketing: `① 전문 질환 블로그/유튜브 콘텐츠 제작\n② 해당 질환 커뮤니티 내 전문가로 인지도 형성\n③ 타 의료기관과의 협진 네트워크 (연계 전원 시스템)        학술·강의 활동으로 B2B 레퍼런스 확보`,
     risk: `편중 리스크: 특정 질환에만 집중하면 계절성·유행성 편차가 발생할 수 있습니다. 주력 2개 질환 + 보조 1개 질환의 포트폴리오 전략으로 리스크를 분산하세요.`
   },
   B2: {
-    name: '탕약 중심 건강관리 전문',
+         ame: '탕약 중심 건강관리 전문',
     emoji: '🍵',
     tagline: '한약의 가치를 재정의하는 신뢰 기반 한의원',
-    tags: ['중형', '탕약/보약', '장기 관리형'],
-    dna: `귀원은 탕약·한약 처방을 핵심 수익원으로, 장기 건강 관리 관계를 중심으로 운영되는 유형입니다. 빠른 효과보다 체질 개선과 예방 관리에 집중하며, 높은 환자 충성도와 안정적인 월 매출이 강점입니다.`,
-    strategy: `탕약의 가치를 설명하는 상담 프로세스(진단→처방 설명→복약 지도)를 표준화하세요. 한약 퀄리티에 대한 투명한 소통(산지, 원산지 공개)이 신뢰 구축의 핵심입니다. 정기 건강 검진 및 계절별 보약 시즌 마케팅을 적극 활용하세요.`,
-    marketing: `① 봄·가을 보약 시즌 마케팅 캠페인\n② 처방 스토리텔링 콘텐츠 (체질별 한약 가이드)\n③ 기존 환자 지인 소개 리퍼럴 프로그램\n④ 한약 복용 성과 사례 후기 콘텐츠 제작`,
+    tags: ['중형', '탕약/보약', '장기 관리형'           dna: `귀원은 탕약·한약 처방을 핵심 수익원으로, 장기 건강 관리 관계를 중심으로 운영되는 유형입니다. 빠른 효과보다 체질 개선과 예방 관리에 집중하며, 높은 환자      성도와      정적인 월         강점입니다.`,
+    strategy:          가치를 설명하는 상담 프        진단→처방 설명→복약 지도)를 표준화하세요. 한약 퀄리티에 대한 투명        (산지, 원산지 공개)이 신뢰 구축의 핵심입니다. 정기 건         및 계절별 보약 시즌 마케팅을 적극 활용하세요.`,
+    marketing: `① 봄·가을 보약 시즌 마케팅 캠페인\n② 처방 스토리텔링 콘텐츠 (체질별 한약 가이드)\n③ 기존 환자 지인 소개 리        로그램\n④ 한약 복용 성과 사례 후기 콘텐츠 제작`,
     risk: `시즌 리스크: 탕약 매출은 봄·가을에 집중됩니다. 여름·겨울 비수기에는 침·추나 또는 다이어트·피부 비급여 프로그램으로 매출 공백을 메울 전략이 필요합니다.`
   },
-  B3: {
-    name: '지역 복합 케어 주치의형',
+  B3: {         name: '지역 복합 케어 주치의형',
     emoji: '🏘️',
     tagline: '지역 주민의 건강을 책임지는 생활 밀착 한의원',
     tags: ['중형', '혼합 수익', '지역 밀착'],
-    dna: `귀원은 다양한 연령대와 질환을 포괄하는 지역 허브형 한의원입니다. 보험과 비급여의 균형 있는 믹스로 안정적 매출을 확보하며, 지역 커뮤니티 내 높은 인지도와 신뢰를 바탕으로 성장합니다.`,
-    strategy: `진료 다양성이 강점이지만, 마케팅 집중도가 낮아질 수 있습니다. 핵심 1~2가지 강점 진료를 선정하여 '주력+보조' 구조를 명확히 하세요. 지역 행사 참여, 건강 강좌 운영 등 오프라인 커뮤니티 활동이 지속적인 성장 동력이 됩니다.`,
-    marketing: `① 지역 맘카페·부동산 카페 정보 제공\n② 지역 건강 강좌 정기 운영 (분기 1회)\n③ 네이버 플레이스 리뷰 관리 및 블로그 SEO\n④ 시즌별 특화 프로그램 (환절기 면역, 여름 다이어트)`,
-    risk: `정체 리스크: 다양성을 추구하다 '전문성 부재'로 인식될 수 있습니다. 매 3개월마다 진료 데이터를 분석하여 가장 성과 좋은 진료 영역에 집중 투자하는 전략적 선택이 필요합니다.`
+           : `귀원은 다양한 연령대와 질환을 포괄하는 지역 허브형 한의원입니다. 보험과 비급여의 균형 있는 믹스로 안정적 매출을 확보하며, 지역 커뮤니티 내 높은 인지도와 신뢰를 바탕으로 성장합니다.`,               rategy        료 다양성이 강점이지만, 마케팅 집중도가 낮아        있습니다. 핵심 1~2가         진료를 선정하여 '주력+보조' 구조를 명확히 하세요. 지역         여, 건강 강좌 운영 등 오프라인 커뮤니티 활동이 지속적인        동력이 됩니다.`,
+    marketing: `① 지역 맘카페·부동산 카페 정보 제공\n② 지역 건강 강좌 정기 운영 (분기 1회)\n③ 네이버 플레이스 리뷰 관리 및 블로그 SEO\n④         특화 프로그램 (환절기 면역, 여름 다이어트)`,
+    risk: `정체 리스크: 다양성을 추구하다 '전문성 부재'로 인식될 수 있습니다. 매 3개월마다 진료 데이터를 분석하여 가장 성과 좋은 진료 영역에 집중 투자하는 전        택이 필요합니다.`
   },
   B4: {
     name: '중형 프리미엄 웰니스 센터형',
     emoji: '💎',
     tagline: '한의원의 경계를 넘어선 프리미엄 웰니스',
-    tags: ['중형', '비급여 중심', '프리미엄'],
+    tags: ['중형', '비급여 중심',        미엄'],
     dna: `귀원은 한의원의 전통적 이미지를 탈피하여 고급 웰니스 클리닉으로 포지셔닝합니다. 체험 중심의 공간 설계, 고단가 패키지 프로그램, 감성 마케팅이 삼위일체를 이루어야 합니다.`,
-    strategy: `인테리어 투자가 가장 중요한 초기 투자입니다. 고급 향아로마, 조명, 음악 등 '오감 경험'을 설계하세요. 예약제 전용 운영, 대기실 없는 동선 설계, 케어 코디네이터 배치가 VIP 경험의 핵심입니다.`,
-    marketing: `① 인스타그램 감성 콘텐츠 (공간, 시술, Before/After)\n② 인플루언서 협찬 및 체험 후기 바이럴\n③ 뷰티·호텔·라이프스타일 업계 콜라보\n④ 프리미엄 패키지 제안서 개발 (항노화, 다이어트, 피부)`,
-    risk: `마케팅 의존 리스크: 고단가 비급여는 마케팅 비용과 직결됩니다. 광고비 대비 신환 전환율(CVR)을 월별로 추적하고, CAC(고객 획득 비용)가 객단가의 20%를 초과하지 않도록 관리하세요.`
+        s      ategy:        리어 투자가 가장 중요한 초기 투자입니다.         아로마, 조명, 음악 등         경험'을 설계하세요. 예약제 전용 운영, 대기실 없는 동선 설계         코디네이터 배치가 VIP 경험의 핵심입니다.`,
+           keting: `① 인스타그램 감성 콘텐츠 (공간, 시술, Before/After)\n② 인플루언서 협찬 및 체험 후기 바이럴\n③ 뷰티·호텔·라이프스타일 업계 콜라보\n④ 프리미엄 패키지 제안서        (항노화, 다이어트, 피부)`,
+    risk: `마케팅 의존 리스크: 고단가 비급여는 마케팅 비용과 직결됩니다. 광고비 대비 신환 전환율(CVR)을 월별로 추적하고, CAC(고객 획득 비용)가 객단가의 20%를 초과        도록 관리하세요.`
   },
   C1: {
     name: '대형 비급여 프리미엄 센터',
     emoji: '🏛️',
     tagline: '지역을 대표하는 한방 프리미엄 의료 센터',
-    tags: ['대형', '비급여 집중', '센터형'],
+    tags: ['대형', '비급여 집중', '        ],
     dna: `귀원은 5진료실 이상의 대규모 시설에서 고단가 비급여 프로그램을 중심으로 운영되는 지역 랜드마크형 한의원입니다. 브랜드 파워와 규모의 경제가 결합된 가장 공격적인 성장 모델입니다.`,
-    strategy: `핵심 비급여 프로그램 3~5종을 선정하고 각각의 특화 공간을 구축하세요. 상담팀과 진료팀의 역할 분리가 필수입니다. 대규모 개원 이벤트로 지역 내 인지도를 단기간에 구축하는 전략이 효과적입니다.`,
-    marketing: `① 개원 전 티저 마케팅 (3개월 전부터 블로그·SNS 선점)\n② 개원 행사: VIP 체험 이벤트, 지역 언론 보도\n③ 전 채널 동시 운영: 블로그, 인스타, 유튜브, 광고\n④ 기업 복지·보험사 연계 B2B 마케팅`,
-    risk: `고정비 리스크: 대형 시설의 임대료·인건비는 손익분기점을 높입니다. 개원 6개월 내 월 매출 1억 원 달성을 목표로 설정하고, 달성되지 않을 경우 즉각적인 마케팅 집중 투자를 결정하는 관리 기준이 필요합니다.`
+    strat      y:       심 비급여          3~5종을 선정하고 각각의 특화 공간을        세요. 상담팀과 진료팀의        분리가 필수입니다. 대규모 개원 이벤트로 지역 내 인지도를 단기간        하는 전략이 효과적입니다.`,
+    marketing:         원 전 티저 마케팅 (3개월 전부터 블로그·SNS 선점)\n② 개원 행사: VIP 체험 이벤트, 지역 언론 보도\n③ 전 채널 동시 운영: 블로그, 인스타, 유튜브, 광고\n④ 기업 복지·보험사 연계         마케팅`,
+    risk: `고정비 리스크: 대형 시설의 임대료·인건비는 손익분기점을 높입니다. 개원 6개월 내 월 매출 1억 원 달성을 목표로 설정하고, 달성되지 않을 경우 즉각적인 마케팅 집        를 결정하는 관리 기준이 필요합니다.`
   },
   C2: {
     name: '대형 한방 병원 전환형',
     emoji: '🏥',
-    tagline: '한의원에서 한방 병원으로, 스케일업의 완성',
+    tagline: '한의원에서 한방 병원으로,        업의 완성',
     tags: ['대형', '보험+입원', '병원 전환'],
-    dna: `귀원은 입원실 운영과 탕약 처방을 결합하여 한방 병원급으로 성장을 도모하는 가장 규모 있는 개원 유형입니다. 요양 기관과의 협력 또는 독자적 한방 병원 설립까지 시야를 넓혀야 합니다.`,
-    strategy: `입원 특화 질환 선정(중풍, 척추, 암 환자 관리 등)과 외래-입원 연계 진료 체계 구축이 핵심입니다. 의료급여 환자 관리 시스템과 보험 청구 최적화가 수익성의 핵심입니다.`,
-    marketing: `① 입원 병동 특화 질환 홍보 콘텐츠\n② 요양 보호사·사회복지사 네트워크 연계\n③ 지역 병원·의원과의 협진 MOU 체결\n④ 환자 가족 대상 상담 프로그램 운영`,
-    risk: `규제 리스크: 한방 병원 운영은 의료법 및 건강보험 규정이 복잡합니다. 전문 의료 컨설턴트 및 의료 전문 회계사와의 정기적인 리뷰가 필수입니다.`
+    dna: `귀원은 입원실 운영과 탕약 처방을 결합하여 한방 병원급으로 성장      도모하      가장 규모         원 유형입니다. 요양 기관과의 협력 또는         한방 병원 설립까지 시        혀야 합니다.`,
+    strategy: `입원 특화 질환         풍, 척추, 암 환자 관리 등)과 외래-입원 연계 진료 체        이 핵심입니다. 의료급여 환자 관리 시스템과 보험 청구 최적화가 수익성의 핵심입니다.`,
+    marketing: `① 입원 병동 특화 질환 홍보 콘텐츠\n② 요양 보호사·사회복지사 네트워크 연계\n③         원·의원과의 협진 MOU 체결\n④ 환자 가족 대상 상담 프로그램 운영`,
+    risk: `규제 리스크: 한방 병원 운영은 의료법 및 건강보험 규정이 복잡합니다. 전문 의료 컨설         의료 전문 회계사와의 정기적인 리뷰가 필수입니다.`
   },
   C3: {
     name: '대형 복합 의료 센터형',
     emoji: '🌐',
-    tagline: '한양방 협진, 지역 의료의 새로운 기준',
+    tagline: '한양방 협진, 지        의 새로운 기준',
     tags: ['대형', '복합 진료', '협진 모델'],
-    dna: `귀원은 한방과 양방, 또는 다양한 비급여 분야를 아우르는 대형 복합 의료 센터를 지향합니다. 지역 내 원스톱 헬스케어 솔루션을 제공하며, 높은 초기 투자와 강력한 경영 시스템이 요구됩니다.`,
-    strategy: `각 진료 분야의 경쟁력 있는 전문가 채용이 성공의 선결 조건입니다. 공간별 브랜딩 전략(부서명, 입구 분리 등)으로 전문성을 유지하면서 시너지를 창출하세요.`,
-    marketing: `① 지역 TV·라디오 광고 (브랜드 인지도 구축)\n② 지역 대형 아파트 단지 입주민 웰컴 키트\n③ 기업 건강검진 패키지 B2B 영업\n④ 유튜브 의료 정보 채널 운영`,
-    risk: `운영 복잡도 리스크: 다양한 진료 파트를 통합 관리하려면 강력한 경영관리 시스템(EMR, HR, 회계 통합)이 필수입니다. 개원 전 3~6개월간 운영 프로세스 설계에 충분히 투자하세요.`
+    dna: `귀원은 한방과 양방, 또는 다양한 비급여 분야를 아우르는 대형 복합 의료 센터를 지향합니다. 지역       원스    톱 헬스    케어 솔루션을 제공하며, 높은 초기 투자와 강력한 경영 시스템이 요구됩니다.`,
+        strategy: `각 진료 분야의 경쟁력 있는 전문가 채    용이 성공의 선결 조건입니다. 공간별 브랜딩 전략(부서명, 입구 분리 등)으로 전    문성을 유지하면서 시너지를 창출하세요.`,
+        marketing: `① 지        ·라디오 광고 (브랜드 인지도 구축)\n         대형 아파트 단지 입주민 웰컴 키트\n③ 기업 건강검진 패키지 B2B         ④ 유튜브 의료 정보 채널 운영`,
+    risk: `운영 복잡도 리스크: 다양한 진료 파트를 통합 관리하려      강력    한 경영    관리 시스템(EMR, HR, 회계 통합)이 필수입      . 개원 전 3~6개월         프로세스 설계에 충분히 투자하세요.`
   }
-};
-
-// ─────────────────────────────────────────
+        // ─────────────────────────────────────────
 // PRESCRIPTIONS (Route B: 15가지 조합)
-// ─────────────────────────────────────────
+// ──────────────────────        ─────────          
 const prescriptions = {
   get(weakAreas) {
     // 최하위 2개 영역으로 처방전 매칭
-    const key = weakAreas.sort().join('+');
+    const key = weakAreas.sort(          ('+');
     return prescriptionData[key] || prescriptionData['default'];
   }
 };
 
-const prescriptionData = {
-  'CS+마케팅': {
+const prescriptionData =           S+마케팅': {
     title: 'CS·마케팅 동시 강화 처방',
-    desc: '신규 환자 유입도 부족하고, 기존 환자 경험도 아직 설계되지 않은 상태입니다. 마케팅으로 환자를 유치하기 전에 CS 시스템을 먼저 구축해야 광고비 낭비를 막을 수 있습니다.',
-    steps: [
-      { title: '1단계 (1개월): CS 기반 구축', desc: '초진·재진 응대 스크립트 제작, 직원 CS 교육 1회 실시, 환자 불만 접수 채널 개설 (카카오 채널)' },
-      { title: '2단계 (2~3개월): 마케팅 기반 정비', desc: '네이버 플레이스 최적화, 블로그 주 2회 포스팅 체계 구축, 인스타그램 계정 개설 및 콘텐츠 캘린더 수립' },
-      { title: '3단계 (4~6개월): 통합 성장 캠페인', desc: 'CS 품질 담보 후 광고 집행 시작, CS 만족 환자의 후기 작성 유도 시스템 연계' }
+    desc: '신규 환자 유입도 부족하고, 기존 환자 경험도 아직 설계되지 않은 상태입니        케팅       환자      유치하기 전에 CS          먼저 구축해야 광고비 낭비를 막을 수 있습니다.'          steps: [
+      { title: '1단계 (1개월): CS 기반 구축', desc: '초진·재진 응대 스크립트 제작, 직원 CS 교육 1        , 환자 불만 접          설 (카카오 채널)' },
+      { title: '2단계 (2~3개월): 마케팅 기반 정비', desc: '네이버 플레이스 최적화, 블로그 주 2          체계 구축, 인스타그램 계정 개설 및 콘텐츠 캘린더 수립' },
+      { title: '3단계 (4~6개월): 통합 성장 캠페인', desc: 'C          보 후 광고 집행 시작, CS 만족 환자의 후기 작성 유도 시스템 연계' }
     ]
   },
   'CS+HR': {
-    title: 'CS·HR 내부 역량 강화 처방',
-    desc: '직원 시스템이 불안정하면 CS 품질도 일관되기 어렵습니다. 인사 체계와 서비스 교육을 동시에 정비하여 내부 경쟁력을 강화해야 합니다.',
+    title: 'CS·HR         량        처방      
+    desc:         시스템이 불안정하면 CS 품질도 일관되기 어렵습니다         체계와 서비스 교육을 동시에 정비하여 내부 경쟁력을 강화해야 합니다.',
     steps: [
-      { title: '1단계: 직원 R&R 명확화', desc: '각 직원별 업무 기술서 작성, 평가 기준 및 KPI 수립, 주간 팀 미팅 제도화' },
-      { title: '2단계: CS 교육 체계 구축', desc: '서비스 교육 매뉴얼 제작, 월 1회 정기 교육 시행, 우수 직원 포상 제도 도입' },
-      { title: '3단계: 채용·온보딩 개선', desc: '신규 직원 2주 온보딩 프로그램, 멘토-멘티 제도 도입, 직원 만족도 분기 설문 실시' }
+      { title: '1단계: 직원 R&R        ', desc:            업무 기술서 작성, 평가 기준 및 KPI 수립, 주간 팀 미팅 제도화' },
+      { title: '2단계: CS 교육 체계 구축', desc: '서비스 교          제작, 월 1회 정기 교육 시행, 우수 직원 포상 제도 도입' },
+      { title: '3단계: 채용·온보딩 개선', desc: '신규 직원 2주 온보딩 프로          -멘티 제도 도입, 직원 만족도 분기 설문 실시' }
     ]
   },
   'CS+진료': {
-    title: 'CS·진료 품질 동반 향상 처방',
-    desc: '치료 효과와 서비스 경험이 모두 표준화되어야 환자 만족도와 재방문율이 올라갑니다. 진료 프로토콜과 서비스 설계를 함께 정비하세요.',
+    title: 'CS·진료 품질        향상      방',         desc: '치료         서비스 경험이 모두 표준화되어야 환자 만족도와 재방        올라갑니다. 진료 프로토콜과 서비스 설계를 함께 정비하세요.',
     steps: [
-      { title: '1단계: 진료 표준화', desc: '주력 질환별 치료 프로토콜 3종 문서화, 초진 진료 로드맵 설명 표준화, 치료 성과 측정 지표 설정' },
-      { title: '2단계: CS 연계 설계', desc: '치료 단계별 안내 멘트 스크립트화, 치료 경과 공유 프로세스 구축, 완료 환자 후기 수집 체계 마련' },
-      { title: '3단계: 통합 품질 관리', desc: '월별 치료 효과 데이터 분석, CS 만족도와 재방문율 상관관계 추적' }
+      { title: '1단계: 진료 표준화        esc: '주력            프로토콜 3종 문서화, 초진 진료 로드맵 설명 표준화, 치료 성과 측정 지표 설정' },
+      { title: '2단계: CS 연계 설          sc: '치료 단계별 안내 멘트 스크립트화, 치료 경과 공유 프로세스 구축, 완료 환자 후기 수집 체계 마련' },
+      { title: '3단계: 통합 품질 관리', desc: '          효과 데이터 분석, CS 만족도와 재방문율 상관관계 추적' }
     ]
   },
   'CS+CRM': {
-    title: 'CS·CRM 환자 경험 설계 처방',
-    desc: '환자 경험의 시작(CS)과 끝(CRM)이 모두 미흡한 상태입니다. 초진부터 장기 관리까지 전 여정을 재설계해야 합니다.',
+    title: 'CS·CRM 환자 경험 설        ',               sc: '환자 경험의        CS)과 끝(CRM)이 모두 미흡한 상태입니다.        터 장기 관리까지 전 여정을 재설계해야 합니다.',
     steps: [
-      { title: '1단계: 고객 여정 맵 작성', desc: '초진→재진→완료→이탈 단계별 환자 경험 요소 매핑, 개선 우선순위 도출' },
-      { title: '2단계: CS 개선 + CRM 시스템 도입', desc: '감동 서비스 포인트 3개 설계, EMR 기반 환자 이력 관리 강화, 생일·기념일 자동 문자 발송 설정' },
-      { title: '3단계: 재방문 유도 자동화', desc: '치료 완료 4주 후 추적 문자 발송, 3개월 부재 환자 재활성화 캠페인 월 1회 시행' }
+      { title: '1단계: 고객 여정 맵 작성', desc: '초진→재진→완료→이        별 환자 경험 요          개선 우선순위 도출' },
+      { title: '2단계: CS 개선 + CRM 시스템 도입', desc: '감동 서비스 포인트 3개 설계, E          환자 이력 관리 강화, 생일·기념일 자동 문자 발송 설정' },
+      { title: '3단계: 재방문 유도 자동화', desc: '치료 완료 4주           자 발송, 3개월 부재 환자 재활성화 캠페인 월 1회 시행' }
     ]
   },
   'CS+비전': {
-    title: 'CS·비전 기반 체계화 처방',
-    desc: '서비스 품질의 일관성을 확보하지 못한 채 성장 전략을 추진하면 고객 이탈이 발생합니다. CS를 먼저 정비하고, 이를 바탕으로 성장 전략을 수립하세요.',
+    title: 'CS·비전 기반 체계        ',               sc: '서비스 품질의        을 확보하지 못한 채 성장 전략을 추진하면 고객 이탈이        니다. CS를 먼저 정비하고, 이를 바탕으로 성장 전략을 수립하세요.',
     steps: [
-      { title: '1단계: CS 기준점 수립', desc: '현재 CS 수준 환자 설문 측정, 목표 NPS 설정, 월별 CS 개선 계획 수립' },
-      { title: '2단계: 성장 비전 재설계', desc: 'CS 품질 기반의 브랜드 스토리 재정립, 1·3·5년 로드맵 수립 (CS 지표 연동)' },
-      { title: '3단계: CS 기반 스케일업', desc: 'CS 품질 매뉴얼화 후 분원 확장 가능성 검토, 프랜차이즈/멀티 원장 모델 설계' }
+      { title: '1단계: CS         수립', desc          CS 수준 환자 설문 측정, 목표 NPS 설정, 월별 CS 개선 계획 수립' },
+      { title: '2단계: 성장 비전 재설계', desc: 'C          반의 브랜드 스토리 재정립, 1·3·5년 로드맵 수립 (CS 지표 연동)' },
+      { title: '3단계: CS 기반 스케일업', desc: 'CS 품           후 분원 확장 가능성 검토, 프랜차이즈/멀티 원장 모델 설계' }
     ]
   },
   '마케팅+HR': {
-    title: '마케팅·HR 성장 인프라 구축 처방',
-    desc: '마케팅으로 환자는 늘릴 수 있지만, 직원 역량이 받쳐주지 못하면 환자 경험이 무너집니다. 두 축을 동시에 강화해야 합니다.',
+    title: '마케팅·HR 성장         구축      방',         desc: '마케        환자는 늘릴 수 있지만, 직원 역량이 받쳐주지 못        자 경험이 무너집니다. 두 축을 동시에 강화해야 합니다.',
     steps: [
-      { title: '1단계: 채용·교육 기반 마련', desc: '현 직원 역량 평가 후 교육 계획 수립, 마케팅 담당자 채용 또는 외주 파트너 선정' },
-      { title: '2단계: 마케팅 채널 최적화', desc: '매출 기여도 분석 후 상위 2개 채널 집중 투자, 콘텐츠 제작 외주 또는 내부 담당자 지정' },
-      { title: '3단계: 성장 인프라 완성', desc: '직원 인센티브와 마케팅 KPI 연동, 신환 유입→직원 응대→재방문의 선순환 구조 설계' }
+      { title: '1단계: 채용·교육 기반          desc: '현           평가 후 교육 계획 수립, 마케팅 담당자 채용 또는 외주 파트너 선정' },
+      { title: '2단계: 마케팅 채널 최적화', desc: '매출            후 상위 2개 채널 집중 투자, 콘텐츠 제작 외주 또는 내부 담당자 지정' },
+      { title: '3단계: 성장 인프라 완성', desc          인센티브와 마케팅 KPI 연동, 신환 유입→직원 응대→재방문의 선순환 구조 설계' }
     ]
   },
   '마케팅+진료': {
-    title: '마케팅·진료 차별화 전략 처방',
-    desc: '진료 결과물이 강력해야 마케팅이 살아납니다. 치료 성과를 데이터화하고, 이를 마케팅 콘텐츠로 전환하는 전략이 핵심입니다.',
+    title        케팅      료 차       전략 처방',
+            : '진료 결과물이 강력해야 마케팅이 살아납니다. 치료 성        이터화하고, 이를 마케팅 콘텐츠로 전환하는 전략이 핵심입니다.',
     steps: [
-      { title: '1단계: 진료 성과 데이터화', desc: '주력 질환 치료 전·후 사례 10건 수집, 통증 수치·ROM 개선 등 객관적 지표 기록' },
-      { title: '2단계: 성과 기반 콘텐츠 제작', desc: '실제 사례 기반 블로그·SNS 콘텐츠 작성, 전문성 입증 유튜브/쇼츠 기획' },
-      { title: '3단계: 전문성 마케팅 캠페인', desc: '특화 질환 키워드 SEO 집중 공략, 커뮤니티 내 전문가 Q&A 활동 활성화' }
+      { title: '1단계: 진료 성과 데이         desc: '주          료 전·후 사례 10건 수집, 통증 수치·ROM 개선 등 객관적 지표 기록' },
+      { title: '2단계: 성과 기반 콘텐츠 제작', desc: '실제 사례 기반 블로그·S           작성, 전문성 입증 유튜브/쇼츠 기획' },
+      { title: '3단계: 전문성 마케팅 캠페인', desc: '특화 질환 키워드 SEO 집          커뮤니티 내 전문가 Q&A 활동 활성화' }
     ]
   },
   '마케팅+CRM': {
     title: '마케팅·CRM 환자 생애주기 관리 처방',
-    desc: '새 환자를 유입하는 것만큼 기존 환자를 붙잡아두는 것이 중요합니다. 신환 유입과 기존 환자 관리를 동시에 최적화해야 합니다.',
+        de      : '      환자를 유입하는 것만큼        환자를 붙잡아두는 것이 중요합니다. 신환 유입과 기존         리를 동시에 최적화해야 합니다.',
     steps: [
-      { title: '1단계: CRM 기반 구축', desc: '환자 DB 정비 및 세그먼트 분류 (초진/재진/장기/휴면), 기본 CRM 도구 도입 (카카오 채널, SMS 시스템)' },
-      { title: '2단계: 마케팅-CRM 연계', desc: '신환 유입 채널 최적화, 첫 방문 후 7·30·90일 자동 팔로업 시스템 구축' },
-      { title: '3단계: 리텐션 캠페인', desc: '휴면 환자 재활성화 캠페인 월 1회, 장기 환자 감사 이벤트 분기 1회, 추천 프로그램 운영' }
+      { title: '1단계: CRM 기반 구축', desc: '환자 DB          세그먼트 분류           /장기/휴면), 기본 CRM 도구 도입 (카카오 채널, SMS 시스템)' },
+      { title: '2단계: 마케팅-CRM 연계', desc: '신환 유          적화, 첫 방문 후 7·30·90일 자동 팔로업 시스템 구축' },
+      { title: '3단계: 리텐션 캠페인', desc: '휴면 환자 재활성          월 1회, 장기 환자 감사 이벤트 분기 1회, 추천 프로그램 운영' }
     ]
   },
   '마케팅+비전': {
-    title: '마케팅·비전 브랜드 성장 전략 처방',
-    desc: '명확한 성장 비전 없이 마케팅을 집행하면 방향성 없는 비용 낭비가 됩니다. 중장기 브랜드 전략과 마케팅을 정렬시켜야 합니다.',
+    title: '마케팅·비전 브        장        처방      
+    desc:          성장 비전 없이 마케팅을 집행하면 방향성 없는 비용         됩니다. 중장기 브랜드 전략과 마케팅을 정렬시켜야 합니다.',
     steps: [
-      { title: '1단계: 브랜드 비전 수립', desc: '3년 후 한의원의 모습 구체화, 핵심 타겟 환자군 재정의, 브랜드 핵심 메시지 3가지 도출' },
-      { title: '2단계: 전략적 마케팅 수립', desc: '비전 달성을 위한 마케팅 로드맵 수립, 채널별 역할 정의 (인지/고려/전환/유지)' },
-      { title: '3단계: 스케일업 준비', desc: '분원 또는 브랜드 확장을 위한 마케팅 자산 구축 (브랜드 가이드라인, 콘텐츠 라이브러리)' }
+      { title: '1단계: 브랜드 비전 수립', desc:         후 한의원의 모           핵심 타겟 환자군 재정의, 브랜드 핵심 메시지 3가지 도출' },
+      { title: '2단계: 전략적 마케팅 수립', desc: '비          위한 마케팅 로드맵 수립, 채널별 역할 정의 (인지/고려/전환/유지)' },
+      { title: '3단계: 스케일업 준비', d          분원 또는 브랜드 확장을 위한 마케팅 자산 구축 (브랜드 가이드라인, 콘텐츠 라이브러리)' }
     ]
   },
-  'HR+진료': {
-    title: 'HR·진료 내부 시스템 완성 처방',
-    desc: '진료의 품질과 직원의 역량은 불가분의 관계입니다. 탁월한 진료 시스템이 직원 업무 효율을 높이고, 우수한 직원이 진료 시스템을 완성합니다.',
+  'HR+진료        
+        ti      e: 'HR·진료 내부         완성 처방',
+    desc: '진료의 품질과 직원의         불가분의 관계입니다. 탁월한 진료 시스템이 직원 업무 효율을 높이고, 우수한 직원이 진료 시스템을 완성합니다.',
     steps: [
-      { title: '1단계: 진료 보조 업무 표준화', desc: '간호조무사·코디네이터의 진료 지원 프로세스 문서화, 역할 분담 최적화' },
-      { title: '2단계: 진료팀 교육 체계', desc: '주력 질환 이해 교육 직원 대상 실시, 진료 흐름 시뮬레이션 훈련' },
-      { title: '3단계: 성과 연계 시스템', desc: '진료 효율 지표와 직원 평가 연동, 우수 성과 공유 문화 형성' }
+          { title:           진료 보조 업무 표준화', desc: '간호조무사·코디네이터의 진료 지원 프로세스 문서화, 역할 분담 최적화' },
+      { title:           진료팀 교육 체계', desc: '주력 질환 이해 교육 직원 대상 실시, 진료 흐름 시뮬레이션 훈련' },
+      { title          : 성과 연계 시스템', desc: '진료 효율 지표와 직원 평가 연동, 우수 성과 공유 문화 형성' }
     ]
   },
   'HR+CRM': {
-    title: 'HR·CRM 환자 관리 역량 강화 처방',
-    desc: '환자 관리는 시스템만큼 사람이 중요합니다. CRM 도구를 도입하되, 이를 실행할 직원의 역량을 함께 키워야 효과가 납니다.',
+           le      'HR      RM 환자 관리 역량        처방',
+    desc: '환자 관리는 시스템만큼 사람        합니다. CRM 도구를 도입하되, 이를 실행할 직원의 역량을 함께 키워야 효과가 납니다.',
     steps: [
-      { title: '1단계: CRM 담당자 지정', desc: '환자 관리 전담 직원 또는 코디네이터 지정, CRM 도구 사용 교육 실시' },
-      { title: '2단계: 환자 관리 프로세스 설계', desc: '재방문 유도 스크립트 작성, 환자별 맞춤 소통 기준 수립' },
-      { title: '3단계: 자동화 + 사람의 조화', desc: '자동 발송 시스템으로 루틴 관리, 중요 환자(장기/고단가)는 담당자 개인 케어 병행' }
+      { title: '1단        RM 담당자 지정          c: '환자 관리 전담 직원 또는 코디네이터 지정, CRM 도구 사용 교육 실시' },
+      { title: '2단계: 환자 관리 프로세스 설계',           '재방문 유도 스크립트 작성, 환자별 맞춤 소통 기준 수립' },
+      { title: '3단계: 자동화 + 사람의 조화', desc: '자동           으로 루틴 관리, 중요 환자(장기/고단가)는 담당자 개인 케어 병행' }
     ]
   },
   'HR+비전': {
-    title: 'HR·비전 조직 문화 기반 성장 처방',
-    desc: '성장하는 조직은 명확한 비전과 이를 실현할 사람이 있습니다. 직원들이 비전을 공유하고 함께 성장하는 문화를 만드는 것이 핵심입니다.',
+    ti         '      ·비전      직 문화 기반 성장 처            desc: '성장하는 조직은 명확한 비전과 이        할 사람이 있습니다. 직원들이 비전을 공유하고 함께 성장하는 문화를 만드는 것이 핵심입니다.',
     steps: [
-      { title: '1단계: 비전 공유 워크숍', desc: '원장님의 3~5년 비전을 직원과 공유, 직원별 기여 방향 설정, 팀 공동 목표 수립' },
-      { title: '2단계: 성장 지원 제도 도입', desc: '직원 교육비 지원 제도, 내부 승진 경로 설계, 성과급 및 인센티브 구조 개선' },
-      { title: '3단계: 핵심 인재 확보 전략', desc: '분원 관리자 양성 프로그램, 파트너 원장 채용 전략 수립' }
+      { title: '1단계: 비전 공        숍', desc:           3~5년 비전을 직원과 공유, 직원별 기여 방향 설정, 팀 공동 목표 수립' },
+      { title: '2단계: 성장 지원 제도 도입',           '직원 교육비 지원 제도, 내부 승진 경로 설계, 성과급 및 인센티브 구조 개선' },
+      { title: '3단계: 핵심 인재 확보 전          sc: '분원 관리자 양성 프로그램, 파트너 원장 채용 전략 수립' }
     ]
   },
   '진료+CRM': {
-    title: '진료·CRM 치료 성과 관리 처방',
-    desc: '좋은 치료 결과를 장기 관계로 연결하지 못하면 성과가 묻힙니다. 진료 데이터를 CRM과 연계하여 환자의 재방문과 소개를 체계적으로 유도해야 합니다.',
+    titl        진료      RM        성과 관리 처방',         desc: '좋은 치료 결과를 장기 관계로 연결하지         성과가 묻힙니다. 진료 데이터를 CRM과 연계하여 환자의 재방문과 소개를 체계적으로 유도해야 합니다.',
     steps: [
-      { title: '1단계: 치료 성과 기록 체계화', desc: '초진-치료 중-완료 단계별 성과 기록 표준화, EMR 입력 항목 최적화' },
-      { title: '2단계: 성과 기반 CRM 연계', desc: '치료 완료 후 성과 공유 메시지 발송, 사후 관리 프로그램 제안 자동화' },
-      { title: '3단계: 재방문·소개 유도', desc: '정기 점검 프로그램 설계, 완치 환자 소개 리퍼럴 인센티브 운영' }
+            title: '1           성과 기록 체계화', desc: '초진-치료 중-완료 단계별 성과 기록 표준화, EMR 입력 항목 최적화' },
+      { title: '          과 기반 CRM 연계', desc: '치료 완료 후 성과 공유 메시지 발송, 사후 관리 프로그램 제안 자동화' },
+      { title: '3단계          소개 유도', desc: '정기 점검 프로그램 설계, 완치 환자 소개 리퍼럴 인센티브 운영' }
     ]
   },
   '진료+비전': {
-    title: '진료·비전 전문성 브랜드 구축 처방',
-    desc: '탁월한 진료 역량을 외부에 알리고 성장 전략으로 연결해야 합니다. 진료 전문성이 비전의 핵심 자산이 되도록 설계하세요.',
+    tit        '진      비전       성 브랜드 구축 처방'          desc: '탁월한 진료 역량을 외부에 알리고 성장        로 연결해야 합니다. 진료 전문성이 비전의 핵심 자산이 되도록 설계하세요.',
     steps: [
-      { title: '1단계: 핵심 전문 역량 정의', desc: '가장 강점이 있는 진료 분야 1~2개 선정, 치료 철학과 접근법 문서화' },
-      { title: '2단계: 전문성 기반 비전 수립', desc: '전문 분야 기반 3~5년 성장 로드맵 수립, 학술 활동·강의·방송 계획 포함' },
-      { title: '3단계: 스케일업 설계', desc: '전문 분야 분원 확장 또는 교육 사업 모델 검토, 퍼스널 브랜딩과 병원 브랜드 연계 전략' }
+      { title: '1단계: 핵         역량 정의',           '가장 강점이 있는 진료 분야 1~2개 선정, 치료 철학과 접근법 문서화' },
+      { title: '2단계: 전문성 기반 비전 수립'          : '전문 분야 기반 3~5년 성장 로드맵 수립, 학술 활동·강의·방송 계획 포함' },
+      { title: '3단계: 스케일업 설계', desc          분야 분원 확장 또는 교육 사업 모델 검토, 퍼스널 브랜딩과 병원 브랜드 연계 전략' }
     ]
   },
   'CRM+비전': {
-    title: 'CRM·비전 지속 성장 시스템 처방',
-    desc: '환자 자산(CRM 데이터)을 기반으로 성장 전략을 수립해야 합니다. 기존 환자 데이터가 미래 성장의 가장 강력한 자산입니다.',
-    steps: [
-      { title: '1단계: 환자 DB 자산화', desc: '전체 환자 DB 정비, 세그먼트 분류, LTV(환자 생애가치) 분석 시작' },
-      { title: '2단계: CRM 기반 성장 지표 설정', desc: '재방문율, 이탈률, LTV를 비전 달성 핵심 지표로 설정, 대시보드 구축' },
-      { title: '3단계: CRM 자산 기반 확장 전략', desc: '충성 환자 기반 분원 오픈 타당성 검토, 기존 환자 대상 신규 서비스 론칭 전략' }
-    ]
-  },
-  'default': {
+    title: 'C        전        성장      스템 처방',
+    d         '환자 자산(CRM 데이터)을 기반으로 성장         수립해야 합니다. 기존 환자 데이터가 미래 성장의 가장 강력한 자산입니다.',
+    steps: [           { titl          계: 환자 DB 자산화', desc: '전체 환자 DB 정비, 세그먼트 분류, LTV(환자 생애가치) 분석 시작' },
+      { ti          2단계: CRM 기반 성장 지표 설정', desc: '재방문율, 이탈률, LTV를 비전 달성 핵심 지표로 설정, 대시보드 구축' },
+      {          : '3단계: CRM 자산 기반 확장 전략', desc: '충성 환자 기반 분원 오픈 타당성 검토, 기존 환자 대상 신규 서비스 론칭 전략'                
+      },
+      'default': {
     title: '종합 경영 시스템 강화 처방',
-    desc: '전 영역에 걸친 균형적 강화가 필요합니다. 우선순위를 정하여 단계적으로 접근하세요.',
+        desc: '전 영역에 걸친 균형적 강화가 필요    합니다. 우선순위를 정하여 단계적으로 접근하세요.',
     steps: [
-      { title: '1단계: 현황 정밀 진단', desc: '각 영역별 현재 수준 수치화, 가장 빠른 개선이 가능한 영역 우선 선정' },
-      { title: '2단계: 핵심 2개 영역 집중', desc: '선정된 영역에 3개월간 집중 투자, 목표 지표 달성 후 다음 영역으로 이동' },
-      { title: '3단계: 전사 통합 관리', desc: '영역 간 시너지 설계, 통합 경영 대시보드 구축, 분기별 경영 리뷰 정례화' }
+          { title: '1단계: 현황 정밀 진단', desc: '각 영역별 현재 수준 수치       가장 빠른 개선이 가능한 영역 우선 선정' },
+      { title: '2단계: 핵심 2개 영역 집중',       sc: '선정된 영역에 3개월간 집중 투자, 목표 지표 달성 후 다음 영역으로 이동' },
+            title: '3단계: 전사 통합 관리', desc: '영역 간 시너지 설계, 통합        대시보드 구축, 분기별 경영 리뷰 정례화' }
     ]
   }
 };
 
-// ─────────────────────────────────────────
-// EFFICIENCY LOGIC (Route B)
-// ─────────────────────────────────────────
-function calcEfficiency(revenueVal, visitorsVal) {
-  const revenueMap = { r1: 2500, r2: 4000, r3: 6500, r4: 9000 };
-  const visitorsMap = { v1: 15, v2: 30, v3: 50, v4: 70 };
+// ─────      ──────────────────────────────────
+// EFFICIENCY LOGIC      Route B)
+// ─────────────────────────      ──────────────
+function calcEfficie      y(revenueVal,     vis    itorsVal) {
+  const reven      Map = {         2500, r2: 4000, r3:        0, r4: 9000 };
+  co        visitorsMap         v1: 15, v2: 30, v3: 50, v4: 70 };
   const revenue = revenueMap[revenueVal] || 4000;
   const visitors = visitorsMap[visitorsVal] || 30;
-  const perVisitor = revenue / (visitors * 22); // 만원/명
-  if (perVisitor >= 10) return 'high';
-  if (perVisitor >= 6) return 'mid';
+  const perVisitor       re      nue / (        tors * 22); // 만원/명        f (perVisitor >= 1        eturn 'high         if (perVisitor >= 6) return 'mid';
   return 'low';
 }
 
 const efficiencyText = {
   high: {
     badge: '운영 효율 높음',
-    color: 'eff-high',
-    icon: '▲',
-    comment: `현재 내원객 대비 매출 효율이 업계 상위 수준입니다. 환자 1인당 객단가가 충분히 확보되어 있으며, 비급여 또는 프로그램 전환율이 양호한 것으로 분석됩니다. 지금의 수익 구조를 유지하면서 신환 유입량을 늘리는 마케팅 투자가 가장 효과적인 성장 전략입니다.`
+    color: 'eff-h      h',         icon        ',
+    comment: `현재 내원         매출 효율이 업계 상위 수준입니        자 1인당 객단가가         확보되어 있으며, 비급여 또는 프로그램 전환율이 양호한 것으로 분석됩니다. 지금의 수익 구조를 유지하면서 신환 유입량을 늘리는 마케팅 투자가 가장 효과적인 성장 전략입니다.`
   },
   mid: {
     badge: '운영 효율 보통',
-    color: 'eff-mid',
+         ol    or:     'eff-mid',
     icon: '→',
-    comment: `현재 효율은 업계 평균 수준입니다. 내원객 수는 적정하나, 객단가를 높일 여지가 있습니다. 비급여 프로그램 추가 또는 탕약·패키지 전환율을 높이는 진료 상담 프로세스 개선이 매출 향상의 핵심 레버가 될 것입니다.`
+    comment: `현재 효율    은 업계 평균 수준입니다.     내원객 수는 적정하나, 객단가를 높일 여지가 있습니다. 비급여 프로그램 추가 또    는 탕약·패키지 전환율을 높이는 진료 상담 프로세스 개선이 매출 향상    의 핵심 레버가 될 것입니다.`
   },
-  low: {
+  l      : {
     badge: '운영 효율 개선 필요',
     color: 'eff-low',
-    icon: '▼',
-    comment: `현재 내원객 수 대비 매출 효율이 낮은 편입니다. 환자 수를 늘리기 전에 객단가와 진료 구성을 먼저 점검해야 합니다. 진료 단가 최적화, 비급여 도입 또는 확대, 불필요한 보험 진료 비중 조정 등 수익 구조 개선이 시급합니다.`
+          on: '▼',
+    comment: `현재 내원객 수 대비 매출 효율이        편입니다. 환자 수를 늘리기 전에 객단가와 진료 구성을 먼저 점검해야 합니다      진료 단가 최적화, 비급여 도입 또는 확대, 불필요한 보험 진료        조정 등 수익 구조 개선이 시급합니다.`
   }
 };
-
-// ─────────────────────────────────────────
-// NAVIGATION
-// ─────────────────────────────────────────
-let currentScreen = 'screen-splash';
+      / ─────────────────────────────────────────
+// NAVIGATION      / ────────────────────────────      ───────────
+let currentScreen = 'screen-spl      h';
 
 function goToScreen(id) {
-  const current = document.getElementById(currentScreen);
-  const next = document.getElementById(id);
-  if (!next || id === currentScreen) return;
-  current.classList.remove('active');
-  current.classList.add('exit');
-  setTimeout(() => current.classList.remove('exit'), 400);
-  next.classList.add('active');
+  const current = docum      t.getElementById(cur    ren    tScreen);
+  const next = document.getElementById(id)    ;
+  if (!next || id === currentScreen) return    ;
+  curr    ent.classList.remove('active');
+  current.cla    ssList.add('exit');
+  setTime      t(() => current.classList.remove('exit')      400);
+  next.classList.add('acti      ');
   next.style.transform = 'translateX(30px)';
-  setTimeout(() => { next.style.transform = ''; }, 10);
+  setTimeout(() =>       next.style.transform = ''; }, 10);
   currentScreen = id;
 }
 
-function goToForm() { goToScreen('screen-form'); }
+function     go    ToForm() { goToScreen('scr      n-form'); }
 
-// ─────────────────────────────────────────
-// FORM
-// ─────────────────────────────────────────
-function toggleConsent(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('checked');
-  if (id === 'c1') state.consent1 = el.classList.contains('checked');
-  if (id === 'c2') state.consent2 = el.classList.contains('checked');
+// ────────────────      ───────────────────────
+// FO      
+// ──────────────────────────────── ─────────
+function togg      Consent(id) {
+  c onst el = document.ge tElementById(id);
+  e l.cla    ssL    ist.toggle('checked');
+  if (id === 'c1') state.consent1 = el.classList.c ontai      ('checked');
+  if (id === 'c2') state.    conse    nt2 = el.classList.contain      'checked');
 }
 
 function formatPhone(v) {
-  const d = v.replace(/\D/g, '');
-  if (d.length <= 3) return d;
-  if (d.length <= 7) return d.slice(0,3) + '-' + d.slice(3);
-  return d.slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7,11);
+  c      st d = v.replace(/\D/       '');
+  if (d.length <= 3      return d;
+  if (d.length <= 7) return d.slice(0,3) +     '-    ' + d.slice(3);
+  return      .slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7,11);
 }
 
-document.getElementById('input-phone').addEventListener('input', function() {
+docume      .getElementById('input-phone').addEventListener('input', function()      
   this.value = formatPhone(this.value);
 });
 
-function showToast(msg) {
+function showToast(ms       {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+      t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(() =>      .classList.remove('show'), 2500);
 }
 
 function submitForm() {
-  const name = document.getElementById('input-name').value.trim();
-  const phone = document.getElementById('input-phone').value.trim();
-  const email = document.getElementById('input-email').value.trim();
-  if (!name) { showToast('성함을 입력해 주세요'); return; }
-  if (phone.length < 12) { showToast('연락처를 정확히 입력해 주세요'); return; }
-  if (!email.includes('@')) { showToast('이메일을 정확히 입력해 주세요'); return; }
-  if (!state.consent1) { showToast('개인정보 수집 동의가 필요합니다'); return; }
-  state.name = name; state.phone = phone; state.email = email;
-  sendToSheet({ name, phone, email, consent1: true, consent2: state.consent2, step: '정보입력완료' });
+  const       me = document.getElementById('input-name').value.trim();
+  const       one = document.getElementById('input-phone').value.trim();
+        nst email = document.getElementById('input-email').value.trim();
+  if (!name) { showToast('성함을       해 주세요'); return; }
+  if (phon    e.l    ength < 12) { showToast('연락처를 정확히 입       주세요')        turn; }
+  if (!email.incl          @')) { showToast           정확히 입력해 주세요'); r           }
+  if (!state.consent1) { showToast('개인정보 수집 동의          다'); return; }
+  state.name = name; state.phone = phone; state.email =         l;
+       endToSh eet({ name, phone, em    ail    , consent1: true, consent2: state.consent2, s    tep: '정보입력완    료' });
   goToScreen('screen-branch');
 }
 
-async function sendToSheet(data) {
+asyn    c function sendToSheet(data    ) {
   try {
-    await fetch(SHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, timestamp: new Date().toISOString() })
+    await f    etch(SHEET_URL, {
+      meth    od: 'POST',
+      mode: '      -cors',
+      heade      : { 'Content-Type':       pplication/json' },
+      body:      SON.stringify({ ...      ta, timestamp: new      ate().toISOString() })
     });
-  } catch(e) { /* silent */ }
-}
-
-// ─────────────────────────────────────────
-// ROUTE A
-// ─────────────────────────────────────────
-let currentQuestions = [];
-let questionIndex = 0;
-let selectedOption = null;
+      }     catch(e) { /* silent */ }
+}      // ────────────────────────────────────────      // ROUTE A
+// ──────────────────────────      ─────────────
+let currentQuestions = []      let questionIndex = 0;
+let selectedOption =      ull;
 
 function startRouteA() {
   state.route = 'A';
-  state.answers = [];
+  state.answers       [];
   currentQuestions = questionsA;
   questionIndex = 0;
   renderQuestion();
-  goToScreen('screen-question');
+  goToScreen('screen-question      ;
 }
 
 function renderQuestion() {
   const q = currentQuestions[questionIndex];
-  if (!q) { finishQuestions(); return; }
+  if (!q) { finish      estions(); return; }
 
-  const total = currentQuestions.length;
-  const pct = (questionIndex / total) * 100;
-  document.getElementById('q-progress-fill').style.width = pct + '%';
-  document.getElementById('q-progress-label').textContent = state.route === 'A' ? '개원 DNA 진단' : '경영 밸런스 진단';
-  document.getElementById('q-progress-fraction').textContent = `${questionIndex + 1} / ${total}`;
-  document.getElementById('q-area-label').textContent = q.area;
-  document.getElementById('q-num-label').textContent = q.num;
-  document.getElementById('q-text').textContent = q.text;
+  const total = currentQuestions.length;       const pct = (questionIndex / total) * 100;
+  document.getEl      entById('q-progress-fill').style.width = pct + '%';
+  do      ment.getElementById('q-progress-label').textContent = state.r      te === 'A' ? '개원 DNA 진단' : '경영 밸런스 진단';
+  document.getEl      entById('q-progress-fraction').textContent = `${questionIndex +        / ${total}`;
+  document.ge      lementById('q-area-label').        Content = q.area;
+  document.get          tById('q-num-label').textContent           m;
+  document.getElementById('q-text').text          t = q.text;
   document.getElementById('q-sub').textContent = q.sub || '';
 
-  selectedOption = state.answers[questionIndex] ?? null;
+  selectedOption = state.answe          stionIndex] ?? null;
 
   const container = document.getElementById('options-container');
   container.innerHTML = '';
@@ -1748,146 +1986,140 @@ function renderQuestion() {
   if (q.type === 'choice') {
     q.options.forEach((opt, i) => {
       const isB = state.route === 'B';
-      const div = document.createElement('div');
-      div.className = 'option-item' + (selectedOption === opt.val ? (isB ? ' selected-b' : ' selected') : '');
-      div.innerHTML = `
-        <div class="option-dot"></div>
-        <div class="option-content">
-          <div class="option-label">${opt.label}</div>
-          ${opt.desc ? `<div class="option-desc">${opt.desc}</div>` : ''}
+      const div = d          t.createElement('div');
+      div.className =           n-item' + (selectedOption ==        t.va      ? (isB ? ' selected-b' : ' select         : '');
+      div.innerH TML =  `
+          <div clas        ption-dot"></div>
+        <div class="option-con        ">
+          <div class="option-label"        pt.label}</div>
+          ${opt          ? `<div class="option-desc">${opt.desc}</di          ''}
         </div>`;
       div.onclick = () => selectOption(opt.val, i);
-      container.appendChild(div);
+          container.appendChild(div);
     });
   } else if (q.type === 'scale') {
-    const labels = ['매우 낮음','낮음','보통','높음','매우 높음'];
-    const scaleRow = document.createElement('div');
-    scaleRow.className = 'scale-options';
-    for (let s = 1; s <= 5; s++) {
-      const btn = document.createElement('div');
-      btn.className = 'scale-btn' + (selectedOption === s ? ' selected' : '');
-      btn.innerHTML = `<div class="scale-num">${s}</div><div class="scale-lbl">${labels[s-1]}</div>`;
-      btn.onclick = () => selectScale(s);
-      scaleRow.appendChild(btn);
-    }
-    const labelRow = document.createElement('div');
-    labelRow.className = 'scale-labels';
+    const la b els = ['매우 낮          ','보통','높음','매우 높음'];
+    const scal           document.createElement('di        
+         caleRow.className = 'scale-options';
+    for (le        = 1; s <= 5; s++) {
+      const btn =        ument.createElement('div');
+      btn.className = 'scale-btn'         electedOption === s ? ' selected'        ');
+      btn.innerHTML = `<div c      ss="scale-num">${s}</div><div class="s        -lbl">${labels[s-1]}</div>`;
+      btn.onclic        () => selectScale(s             scaleRow.appendChild(btn)          }
+    const labelRow = document.creat        ment('div');
+    labelRow.className = '        e-labels';
     labelRow.innerHTML = '<span>전혀 없음</span><span>완전히 갖춤</span>';
-    container.appendChild(scaleRow);
-    container.appendChild(labelRow);
+    container.append        d(scaleRow);
+    container.a        dChild(labelRow);
   }
 }
 
-function selectOption(val, idx) {
+function selectOption        , idx) {
   selectedOption = val;
-  const items = document.querySelectorAll('.option-item');
-  const isB = state.route === 'B';
+  c      st     it    ems = document.querySelectorAll('.      tion-item');
+  const i       = state.route === 'B';
   items.forEach((el, i) => {
-    el.classList.remove('selected', 'selected-b');
-    if (i === idx) el.classList.add(isB ? 'selected-b' : 'selected');
-  });
+          .classList.remove('selected', 'se      cted-b');
+    if (i === idx        .classList.add(isB ? 'selected-b' : 'selected')        });
   // auto-advance after short delay
-  setTimeout(() => nextQuestion(), 300);
+  setTimeout(() => nextQue      ion(       300);
 }
 
-function selectScale(val) {
+function selectScale(val      {
   selectedOption = val;
-  document.querySelectorAll('.scale-btn').forEach((btn, i) => {
-    btn.classList.toggle('selected', i + 1 === val);
+  document.qu    ery    SelectorAll('.scale-btn').fo      ach((btn, i) => {
+          n.classList.toggle('selected', i + 1 === val);
   });
-  setTimeout(() => nextQuestion(), 300);
+  setTime        () => nextQuestion(), 300);
 }
 
-function nextQuestion() {
-  if (selectedOption === null || selectedOption === '') {
-    showToast('항목을 선택해 주세요'); return;
+function nextQuest      n()         if (selectedOption === null || select    edO    ption === '') {
+    showTo      t('항목을 선택해 주세요'); return;
   }
-  state.answers[questionIndex] = selectedOption;
+  state.answers[questionIn         = selectedOption;
 
-  // Store B metrics
+  // Store B m      ri      
   const q = currentQuestions[questionIndex];
-  if (state.route === 'B' && questionIndex < 2) {
-    if (questionIndex === 0) state.bMetrics.revenue = selectedOption;
-    if (questionIndex === 1) state.bMetrics.visitors = selectedOption;
-  }
+         (state.route === '       && questionIndex < 2) {
+    if (questionIn      x === 0) state.bMetrics.revenue = selectedOption          if (questionIndex === 1) state.bMetrics.visitors = selectedOptio         }
 
   questionIndex++;
-  selectedOption = state.answers[questionIndex] ?? null;
-  if (questionIndex >= currentQuestions.length) { finishQuestions(); return; }
+  selectedOption = state.answers[questionInd      ] ?      null;
+  if (quest      nIndex >= currentQuestions.length) { finishQuestions();      eturn; }
   renderQuestion();
 }
 
 function goBackQuestion() {
-  if (questionIndex === 0) {
-    goToScreen('screen-branch');
-  } else {
+  if (questionInd       === 0) {
+    goTo    Scr    een('screen-branch');
+  } el       {
     questionIndex--;
-    selectedOption = state.answers[questionIndex] ?? null;
-    renderQuestion();
+           ectedOption = state.answers[q      stionInde        ? null;
+    rende        stion();
   }
 }
 
 function finishQuestions() {
-  goToScreen('screen-loading');
-  setTimeout(() => generateReport(), 2500);
+  goToScre        screen-loading');
+      se    tTi    meout(() => generateReport(),      500);
 }
 
-// ─────────────────────────────────────────
+// ──────────────────      ─────────────────────
 // ROUTE B
-// ─────────────────────────────────────────
-function startRouteB() {
+// ──────    ───    ────────────────────────────────
+function sta    rtRouteB()     {
   state.route = 'B';
   state.answers = [];
-  state.bMetrics = { revenue: '', visitors: '', goal: '' };
-  currentQuestions = [...questionsB_basic, ...questionsB_scale.map(q => ({ ...q, type: 'scale' }))];
+      state.bMetrics = { reve      e: '', visitors: ''      goal: '' };
+  curren      uestions = [...questionsB_basic, ...questionsB_scale.map(q      > ({ ...q, type: 'scale' }))];
   questionIndex = 0;
   renderQuestion();
-  goToScreen('screen-question');
+  goToScreen('screen-questi      ');
 }
 
-// ─────────────────────────────────────────
+// ─────────      ──────────────────      ──────────
 // GENERATE REPORT
-// ─────────────────────────────────────────
-function generateReport() {
-  const container = document.getElementById('report-content');
+/    / ─    ────────────────────────────────────────
+func    tion generateReport    () {
+  const container = document.getElementB    yId('report-content');
 
-  if (state.route === 'A') {
-    const personaKey = personas.getPersona(state.answers);
-    const p = personaData[personaKey] || personaData['B3'];
-    container.innerHTML = buildReportA(p);
-  sendToSheet(buildSheetPayload('A', state.answers, personaKey, null, null));
+  if      state.route === 'A') {
+    const personaKey = personas.getPers      a(state.answers);
+    const         personaData[personaKey] || personaData['B3'];
+    cont        r.innerHTML = buildReportA(p);
+  sendToSheet(buildSheetP        ad('A', state.answers, personaKey, null        ll));
   } else {
     // Calc B scores
-    const scaleAnswers = state.answers.slice(3); // skip 3 basic
-    const scores = {};
+    const scaleAnswers = state.answer      slice(3);        skip 3 basic
+            t scores = {};
     areasB.forEach(a => scores[a] = []);
-    questionsB_scale.forEach((q, i) => {
-      scores[q.areaKey].push(Number(scaleAnswers[i]) || 3);
+    q        ionsB_scale.forEach         i) => {
+      scores[q.areaKey].push        ber(scaleAnswers[i]) || 3);
     });
-    const avgScores = {};
+           st avgScores = {};
     areasB.forEach(a => {
-      const arr = scores[a];
-      avgScores[a] = arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 3;
+      con        rr =        res[a];
+      avgScore         = arr.length ? arr.re          s, v) => s + v, 0) / ar          th : 3;
     });
-    const sorted = areasB.slice().sort((a, b) => avgScores[a] - avgScores[b]);
+    const sorted = areasB.slice().sort((a, b) => avgScores[a]        vgSc        [b]);
     const weakTwo = [sorted[0], sorted[1]];
-    const eff = calcEfficiency(state.bMetrics.revenue, state.bMetrics.visitors);
+    const eff = calcEffic        y(state.bMetrics.revenue, state.bMetrics        itors);
     const rx = prescriptions.get(weakTwo);
-    container.innerHTML = buildReportB(avgScores, weakTwo, eff, rx);
-  sendToSheet(buildSheetPayload('B', state.answers, null, weakTwo.join(' + '), eff));
+    container.innerHTML =         dReportB(avgScores, weakTwo, eff, rx);
+        ndToSheet(buildSheetPayload('B', state.answers, null, weakTwo.joi        + '), eff));
   }
 
   goToScreen('screen-report');
 }
 
 // ─────────────────────────────────────────
-// REPORT A HTML
-// ─────────────────────────────────────────
-function buildReportA(p) {
+// R      ORT       HTML
+// ────────────────────    ───    ──────────────────
+function buildReportA(p) {    
   return `
-  <div class="report-hero">
-    <div class="report-type">개원 DNA 진단 리포트</div>
-    <div class="report-persona">${p.emoji} ${p.name}</div>
+  <di    v class="report-hero">
+    <div class="report    -type">개원 DNA 진단 리포트</div>
+        <div class="report-persona">${p.emoji} ${p.name}</div>
     <div class="report-tagline">${p.tagline}</div>
     <div class="report-tags">
       ${p.tags.map(t => `<span class="report-tag">${t}</span>`).join('')}
@@ -1935,23 +2167,21 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
     const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
     const sc = avgScores[a];
     const ratio = sc / 5;
-    return { x: cx + Math.cos(angle) * r * ratio, y: cy + Math.sin(angle) * r * ratio, label: a, score: sc };
+    return {     x:     cx + Math.cos(angle) * r * ratio, y: cy + Ma    th.sin(angle) * r     * ratio, label: a, score: sc };
   });
-  const gridPts = (ratio) => areasB.map((a, i) => {
-    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
-    return `${cx + Math.cos(angle) * r * ratio},${cy + Math.sin(angle) * r * ratio}`;
+  cons    t gridPts = (ratio) => areasB.map((a, i) => {
+    con       angle = (i / 6) * Math.PI * 2 - Math.       / 2;
+    ret      n `${cx + Math.cos(angle) * r * ra      o},${cy + Math.sin(angle) * r * rat        ;
   }).join(' ');
-  const labelPts = areasB.map((a, i) => {
-    const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+  const labelPts = areasB.map((a,        => {
+    const angle = (i        ) * Math.PI * 2 - Math        / 2;
     return { x: cx + Math.cos(angle) * (r + 22), y: cy + Math.sin(angle) * (r + 22), label: a };
-  });
-  const dataPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ') + 'Z';
+  })        co      t dataPath = pts.map((p, i) => `${i === 0 ? 'M' :         ${p.x},${p.y}`).join(' ') + 'Z';
 
-  const radarSVG = `
-  <svg viewBox="0 0 260 260" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="${gridPts(1)}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-    <polygon points="${gridPts(0.8)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
-    <polygon points="${gridPts(0.6)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+  const radarSVG           <svg viewBox="0 0 260 260" width="260" height="260" xmlns="http://www.w3.org/200      svg">
+    <pol      on points="${gridPts(1)}" fill="none" st        ="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <p        on points="${gridPts(0.8)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+        <p      ygon points="${gridPts(0.6)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"      
     <polygon points="${gridPts(0.4)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
     <polygon points="${gridPts(0.2)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
     ${areasB.map((a, i) => {
@@ -1959,12 +2189,10 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
       return `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(angle) * r}" y2="${cy + Math.sin(angle) * r}" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>`;
     }).join('')}
     <path d="${dataPath}" fill="rgba(78,205,196,0.15)" stroke="#4ECDC4" stroke-width="2"/>
-    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#4ECDC4"/>`).join('')}
-    ${labelPts.map(p => `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#9CA8BC" font-family="Noto Sans KR">${p.label}</text>`).join('')}
+    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#4ECDC4"/>`).join('')        ${labelPts.map(p => `<text x="${p.x}" y="${p.y}" te        hor="middle" dominant-baseline="middle" font-size="10" fill="#9CA8BC" font-family="Noto Sans KR">${p.label}</text>`).join('')}
   </svg>`;
 
-  const barColors = {
-    high: '#4ECDC4',
+  const barColors           high: '#4ECDC4',
     mid: '#C9A96E',
     low: '#E8826B'
   };
@@ -1977,15 +2205,14 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
     return `
     <div class="score-item">
       <div class="score-header">
-        <span class="score-name">${a}${isWeak ? ' ⚠️' : ''}</span>
-        <span class="score-val">${sc.toFixed(1)} / 5.0</span>
+        <span class="s      re-name">${a}${isWea        ' ⚠️' : ''}</span              <span clas        core-val">${sc.      Fixe      1)} / 5.0</span>
       </div>
-      <div class="score-track"><div class="score-bar" style="width:${pct}%;background:${color}"></div></div>
+      <        class="score-track"><div         s="score-bar" style="width:$        }%;background:${color}"></div></div>
     </div>`;
   }).join('');
 
-  const rxSteps = rx.steps.map((s, i) => `
-    <div class="rx-step">
+  const rxSteps =         teps.map((s, i) => `
+    <div class=        step">
       <div class="rx-num">${i+1}</div>
       <div class="rx-content">
         <div class="rx-title">${s.title}</div>
@@ -1994,16 +2221,15 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
     </div>`).join('');
 
   const revenueLabel = { r1: '3천만원 미만', r2: '3천~5천만원', r3: '5천~8천만원', r4: '8천만원 이상' };
-  const visitorsLabel = { v1: '20명 미만', v2: '20~40명', v3: '40~60명', v4: '60명 이상' };
+  const visitorsLabel = { v1: '20명 미만', v2      '20~40명', v3:       0~60명', v4: '60명 이상' };
 
   return `
   <div class="report-hero">
-    <div class="report-type">경영 밸런스 진단 리포트</div>
+    <div class="report-type">경영  밸 런스 진단 리포트</div>
     <div class="report-persona">📊 ${state.name} 원장님의 경영 진단</div>
     <div class="report-tagline">6개 핵심 영역 종합 분석 결과</div>
     <div class="report-tags">
-      <span class="report-tag">월매출 ${revenueLabel[state.bMetrics.revenue] || '-'}</span>
-      <span class="report-tag">일 내원 ${visitorsLabel[state.bMetrics.visitors] || '-'}</span>
+          <span class="report-tag">월매출 ${revenueLabel[state.bMetrics.revenue] || '-'}</span>           <span class="report-tag">일 내원 ${visitorsLabel[state.bMetrics.visitors] || '-'}      span>
       <span class="report-tag">목표 ${state.bMetrics.goal || '미입력'}</span>
     </div>
   </div>
@@ -2062,29 +2288,26 @@ function restartAll() {
   document.getElementById('input-email').value = '';
   document.getElementById('c1').classList.remove('checked');
   document.getElementById('c2').classList.remove('checked');
-  state.consent1 = false; state.consent2 = false;
-  goToScreen('screen-splash');
+  state.consent1 = fals    e;     state.consent2 = false;
+  goToScreen('screen-    splash');
 }
 
-// Animate score bars after report renders
-document.getElementById('screen-report').addEventListener('transitionend', () => {
+// An    imate score bars after report renders
+documen    t.getElementById('screen      eport').addEventListener('transitionend       () => {
   document.querySelectorAll('.score-bar').forEach(bar => {
-    const w = bar.style.width;
-    bar.style.width = '0%';
-    setTimeout(() => { bar.style.width = w; }, 100);
+    const w     = b    ar.style.width;
+    bar.      yle.width = '0%';
+        setTimeout(() => { bar.style.width = w; }, 100);
   });
-});
-
-  // ── GOOGLE SHEETS FULL PAYLOAD ──
-  const goalLabelMap = { g1: '3천만~5천만원', g2: '6천만~9천만원', g3: '1억~1억5천만원', g4: '1억6천만~2억', g5: '2억 이상' };
-  function buildSheetPayload(route, answers, persona, weakAreas, efficiency) {
-    const aLabels = ['의원 규모','입원실 운영','시설 투자','개원 상권','주력 타겟','마케팅 채널','수익 모델','진료 스타일','브랜드 방향'];
+});        // ── GOOGLE SHEET      FULL PAYLOAD ──
+  c      st goalLabelMap = { g1:      3천만~5천만원', g2: '6천만~9천만원', g3: '1억~1억5천만원', g4: '1      천만~2억', g5: '2억 이상' };
+  function buildSheetPayload      oute, answers, persona, weakAreas, efficiency) {
+        const aLabels = ['의원 규모','입원실 운영','시설 투자','개원 상권','주력 타겟','      팅 채널','수익 모델','진료 스타일','브랜드 방향'];
     const aMaps = [
-      {S:'소형(1~2)',M:'중형(3~4)',L:'대형(5+)'},{no:'계획없음',maybe:'향후고려',yes:'처음부터'},
-      {low:'최소투자',mid:'표준투자',high:'프리미엄'},{residential:'주거밀집',urban:'도심/역세권',medical:'의료복합'},
-      {kids:'영유아/소아',young:'2030직장인',senior:'4060중장년'},{online:'온라인SNS',offline:'지역커뮤니티',review:'리뷰플랫폼'},
-      {insurance:'보험중심',mixed:'보험+비급여',premium:'비급여중심'},{treatment:'침추나처치',herbal:'탕약처방',program:'복합프로그램'},
-      {specialist:'전문특화',gp:'동네주치의',premium:'프리미엄웰니스'}
+           S:'소형(1~2)',M:'중형(3~4)',L:'대형(5+)'},{no:'계획없음',m      be:'향후고려',yes:'처음부터'},
+          {lo    w:'최소투자',mid:'표준투자',high:'프리미엄'},{residenti    al:'주거밀집',urban:'도심/역세권',medical:'의료복합'},
+      {kids:'영유아/소아',young:'2030직장인',seni      :'4060중장년'},{online:'온라인SNS',offline:'지역커뮤니티',review:'리뷰플        ,
+      {insurance:'보험중심',m        :'보험+비급여',premium:'비급여중심        treatment:'침추나처치',herbal:'탕약처방',program:'복합프로그램'}                {spec'전문특화',gp:'동네주치의',premium:'프리미엄웰니스'}
     ];
     const bBasic = ['현재월매출','일평균내원객','6개월매출목표'];
     const bBasicMaps = [
@@ -2110,6 +2333,7 @@ document.getElementById('screen-report').addEventListener('transitionend', () =>
     }
     return payload;
   }
-</script>
+  </script>
 </body>
+
 </html>
