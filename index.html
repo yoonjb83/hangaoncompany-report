@@ -1700,11 +1700,6 @@ async function sendToSheet(data) {
   try {
     const _p = new URLSearchParams({...data, timestamp: new Date().toISOString()});
     await fetch(SHEET_URL + '?' + _p.toString(), { method: 'GET', mode: 'no-cors' });
-
-      mode: 'no-cors',
-
-
-    });
   } catch(e) { /* silent */ }
 }
 
