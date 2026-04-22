@@ -1695,12 +1695,8 @@ function submitForm() {
 
 async function sendToSheet(data) {
   try {
-    await fetch(SHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, timestamp: new Date().toISOString() })
-    });
+    const _p = new URLSearchParams({...data, timestamp: new Date().toISOString()});
+    await fetch(SHEET_URL + '?' + _p.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { /* silent */ }
 }
 
