@@ -1848,7 +1848,7 @@ function generateReport() {
     const personaKey = personas.getPersona(state.answers);
     const p = personaData[personaKey] || personaData['B3'];
     container.innerHTML = buildReportA(p);
-  sendToSheet({ n:state.name, p:state.phone, e:state.email, route:'A', persona:personaKey, ans:state.answers.join('|') });
+  (function(){var d={n:state.name,p:state.phone,e:state.email,route:"A",persona:personaKey};questionsA.forEach(function(q,i){var o=q.options&&q.options.find(function(x){return x.val===state.answers[i];});d["Q"+(i+1)+"_"+q.area.replace(/\s/g,"")]=o?o.label:(state.answers[i]||"");});sendToSheet(d);})();
   } else {
     // Calc B scores
     const scaleAnswers = state.answers.slice(3); // skip 3 basic
@@ -1867,7 +1867,7 @@ function generateReport() {
     const eff = calcEfficiency(state.bMetrics.revenue, state.bMetrics.visitors);
     const rx = prescriptions.get(weakTwo);
     container.innerHTML = buildReportB(avgScores, weakTwo, eff, rx);
-  sendToSheet({ n:state.name, p:state.phone, e:state.email, route:'B', weak:weakTwo.join('+'), eff:eff, ans:state.answers.join('|') });
+  (function(){var d={n:state.name,p:state.phone,e:state.email,route:"B",weak:weakTwo.join("+"),eff:eff};currentQuestions.forEach(function(q,i){if(q.type==="choice"){var o=q.options&&q.options.find(function(x){return x.val===state.answers[i];});d["Q"+(i+1)+"_"+(q.area||q.areaKey||i).toString().replace(/\s/g,"")]=o?o.label:(state.answers[i]||"");}else{d["Q"+(i+1)+"_"+(q.area||q.areaKey||i).toString().replace(/\s/g,"")]=(state.answers[i]||"")+"pt";}});sendToSheet(d);})();
   }
 
   goToScreen('screen-report');
