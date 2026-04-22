@@ -77,7 +77,7 @@
     inset: 0;
     background:
       radial-gradient(ellipse 60% 40% at 80% 10%, rgba(45,125,154,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 60% at 20% 90%, rgba(45,125,154,0.03) 0%, transparent 60%);
+      radial-gradient(ellipse 50% 60% at 20% 90%, rgba(30,45,69,0.6) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
@@ -607,7 +607,6 @@
 
     width: 100%;
     max-width: 520px;
-    margin-top: auto;
     padding: 16px 24px calc(16px + var(--safe-bottom));
     background: linear-gradient(to top, var(--deep) 70%, transparent);
     z-index: 10;
@@ -801,7 +800,7 @@
     margin: 12px 0;
   }
   .eff-high { background: rgba(78,205,196,0.15); border: 1px solid rgba(78,205,196,0.4); color: var(--accent-teal); }
-  .eff-mid { background: rgba(45,125,154,0.15); border: 1px solid rgba(45,125,154,0.4); color: var(--gold-dark); }
+  .eff-mid { background: rgba(45,125,154,0.15); border: 1px solid rgba(45,125,154,0.4); color: var(--gold-light); }
   .eff-low { background: rgba(232,130,107,0.15); border: 1px solid rgba(232,130,107,0.4); color: var(--accent-rose); }
 
   /* prescription cards */
@@ -826,7 +825,7 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 11px;
     font-weight: 700;
-    color: #1E293B;
+    color: #FFFFFF;
     flex-shrink: 0;
   }
   .rx-content { flex: 1; }
@@ -843,7 +842,7 @@
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 16px;
     font-weight: 700;
-    color: #1E293B;
+    color: #FFFFFF;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -919,11 +918,11 @@
 
   /* Toast */
   .toast {
-    position: fixed;
+    position: sticky;
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: rgba(240,244,248,0.98);
+    background: rgba(30,45,69,0.95);
     border: 0.5px solid rgba(45,125,154,0.3);
     border-radius: 20px;
     padding: 12px 24px;
@@ -1264,13 +1263,7 @@ const questionsB_basic = [
     text: '6개월 후 달성하고 싶은 월 매출 목표는?',
     sub: '솔직한 목표를 자유롭게 입력해 주세요.',
         type: 'choice',
-        options: [
-          { label: '3\ucc9c\ub9cc\uc6d0 ~ 5\ucc9c\ub9cc\uc6d0', val: 'g1' },
-          { label: '6\ucc9c\ub9cc\uc6d0 ~ 9\ucc9c\ub9cc\uc6d0', val: 'g2' },
-          { label: '1\uc5b5 ~ 1\uc5b5 5\ucc9c\ub9cc\uc6d0', val: 'g3' },
-          { label: '1\uc5b5 6\ucc9c\ub9cc ~ 2\uc5b5', val: 'g4' },
-          { label: '2\uc5b5 \uc774\uc0c1', val: 'g5' },
-        ],
+        options: [{ label: '3\ucc9c\ub9cc ~ 5\ucc9c\ub9cc\uc6d0', val: 'g1' }, { label: '6\ucc9c\ub9cc ~ 9\ucc9c\ub9cc\uc6d0', val: 'g2' }, { label: '1\uc5b5 ~ 1\uc5b5 5\ucc9c\ub9cc\uc6d0', val: 'g3' }, { label: '1\uc5b5 6\ucc9c\ub9cc ~ 2\uc5b5', val: 'g4' }, { label: '2\uc5b5 \uc774\uc0c1', val: 'g5' }],
   }
 ];
 
@@ -1702,11 +1695,12 @@ function submitForm() {
 
 async function sendToSheet(data) {
   try {
-    await fetch(SHEET_URL, {
-      method: 'POST',
+    const _p = new URLSearchParams({...data, timestamp: new Date().toISOString()});
+    await fetch(SHEET_URL + '?' + _p.toString(), { method: 'GET', mode: 'no-cors' });
+
       mode: 'no-cors',
-      headers: {},
-      body: Object.keys({...data, timestamp: new Date().toISOString()}).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(({...data, timestamp: new Date().toISOString()})[k])).join('&'),
+
+
     });
   } catch(e) { /* silent */ }
 }
@@ -1856,7 +1850,7 @@ function generateReport() {
     const personaKey = personas.getPersona(state.answers);
     const p = personaData[personaKey] || personaData['B3'];
     container.innerHTML = buildReportA(p);
-    sendToSheet({ name:state.name, phone:state.phone, email:state.email, route:'A', persona:personaKey, answers:state.answers.join('|'), step:'report' });
+  sendToSheet({ n:state.name, p:state.phone, e:state.email, route:'A', persona:personaKey, ans:state.answers.join('|') });
   } else {
     // Calc B scores
     const scaleAnswers = state.answers.slice(3); // skip 3 basic
@@ -1875,7 +1869,7 @@ function generateReport() {
     const eff = calcEfficiency(state.bMetrics.revenue, state.bMetrics.visitors);
     const rx = prescriptions.get(weakTwo);
     container.innerHTML = buildReportB(avgScores, weakTwo, eff, rx);
-    sendToSheet({ name:state.name, phone:state.phone, email:state.email, route:'B', weakAreas:weakTwo.join('+'), efficiency:eff, answers:state.answers.join('|'), step:'report' });
+  sendToSheet({ n:state.name, p:state.phone, e:state.email, route:'B', weak:weakTwo.join('+'), eff:eff, ans:state.answers.join('|') });
   }
 
   goToScreen('screen-report');
