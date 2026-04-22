@@ -1444,8 +1444,8 @@ const personaData = {
 // ─────────────────────────────────────────
 const prescriptions = {
   get(weakAreas) {
-    // 최하위 2개 영역으로 처방전 매칭
-    const key = weakAreas.sort().join('+');
+    const order = ['CS', '마케팅', 'HR', '진료', 'CRM', '비전'];
+    const key = weakAreas.sort((a, b) => order.indexOf(a) - order.indexOf(b)).join('+');
     return prescriptionData[key] || prescriptionData['default'];
   }
 };
