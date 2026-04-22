@@ -1692,7 +1692,6 @@ function submitForm() {
   if (!email.includes('@')) { showToast('이메일을 정확히 입력해 주세요'); return; }
   if (!state.consent1) { showToast('개인정보 수집 동의가 필요합니다'); return; }
   state.name = name; state.phone = phone; state.email = email;
-  sendToSheet({ name, phone, email, consent1: true, consent2: state.consent2, step: '정보입력완료' });
   goToScreen('screen-branch');
 }
 
