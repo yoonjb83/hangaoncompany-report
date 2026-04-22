@@ -1859,7 +1859,7 @@ function generateReport() {
     const personaKey = personas.getPersona(state.answers);
     const p = personaData[personaKey] || personaData['B3'];
     container.innerHTML = buildReportA(p);
-    sendToSheet({ ...state, route: 'A', persona: personaKey, step: '리포트완료' });
+    (function(){var d={"이름":state.name,"연락처":state.phone,"이메일":state.email,"구분":"개원예정","추천유형":personaKey};questionsA.forEach(function(q,i){var o=q.options&&q.options.find(function(x){return x.val===state.answers[i];});var title=(i+1)+". "+q.area; d[title]=o?o.label:(state.answers[i]||"");});sendToSheet(d);})();
   } else {
     // Calc B scores
     const scaleAnswers = state.answers.slice(3); // skip 3 basic
@@ -1878,7 +1878,7 @@ function generateReport() {
     const eff = calcEfficiency(state.bMetrics.revenue, state.bMetrics.visitors);
     const rx = prescriptions.get(weakTwo);
     container.innerHTML = buildReportB(avgScores, weakTwo, eff, rx);
-    sendToSheet({ ...state, route: 'B', weakAreas: weakTwo.join('+'), efficiency: eff, step: '리포트완료' });
+    (function(){var d={"이름":state.name,"연락처":state.phone,"이메일":state.email,"구분":"기개원운영","취약영역":weakTwo.join(" + "),"추천솔루션":eff};currentQuestions.forEach(function(q,i){var title=(i+1)+". "+(q.area||q.areaKey||"문항"); if(q.type==="choice"){var o=q.options&&q.options.find(function(x){return x.val===state.answers[i];});d[title]=o?o.label:(state.answers[i]||"");}else{d[title]=(state.answers[i]||"")+"점";}});sendToSheet(d);})();
   }
 
   goToScreen('screen-report');
