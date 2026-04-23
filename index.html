@@ -955,7 +955,7 @@
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   .save-btn-img { background: var(--gold); }
-  .save-btn-pdf { background: var(--text-main); }
+  .save-btn-pdf { background: var(--gold); }
   
   @media print {
     body, #app { overflow: visible !important; height: auto !important; background: #fff !important; }
@@ -1952,8 +1952,7 @@ function buildReportA(p) {
   </div>
   <div class="report-footer">
     
-    <button class="save-btn-img" onclick="saveAsImage()">이미지 저장 (사파리/크롬 권장)</button>
-    <button class="save-btn-pdf" onclick="saveAsPdf()">PDF 저장 (모든 기기 100% 호환)</button>
+    <button class="save-btn-pdf" onclick="saveAsPdf()">리포트 저장하기 (PDF파일)</button>
     <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
   </div>`;
 }
@@ -2075,8 +2074,7 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
   </div>
   <div class="report-footer">
     
-    <button class="save-btn-img" onclick="saveAsImage()">이미지 저장 (사파리/크롬 권장)</button>
-    <button class="save-btn-pdf" onclick="saveAsPdf()">PDF 저장 (모든 기기 100% 호환)</button>
+    <button class="save-btn-pdf" onclick="saveAsPdf()">리포트 저장하기 (PDF파일)</button>
     <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
   </div>`;
 }
