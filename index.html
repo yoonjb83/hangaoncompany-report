@@ -2117,7 +2117,15 @@ function saveAsImage() {
 }
 
 function saveAsPdf() {
-  // Mobile devices use native OS print dialogue to easily save as PDF
+  const agent = navigator.userAgent.toLowerCase();
+  
+  // 카카오톡 등 인앱 브라우저 체크
+  if (agent.indexOf('kakaotalk') !== -1 || agent.indexOf('naver') !== -1 || agent.indexOf('instagram') !== -1) {
+    alert('⚠️ 현재 접속하신 카카오톡(네이버 등) 브라우저는 스마트폰 보안 정책상 화면 저장 기능을 사용할 수 없습니다.\n\n[해결 방법]\n우측 상단(또는 하단)의 메뉴(⋮) 버튼을 누르고 👉 "다른 브라우저로 열기"를 선택해 사파리/크롬으로 여신 후 저장해주세요!');
+    return;
+  }
+  
+  // 정상적인 외부 브라우저일 경우에만 PDF 프린트 호출
   window.print();
 }
 
