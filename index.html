@@ -1727,33 +1727,16 @@ function formatPhone(el) {
   el.value = val;
 }
 
-function handleDomainChange() {
-  const sel = document.getElementById('input-email-domain');
-  const custom = document.getElementById('input-email-custom');
-  if (sel.value === 'custom') {
-    sel.style.display = 'none';
-    custom.style.display = 'block';
-    custom.value = '';
-    custom.focus();
-  }
-  updateEmail();
-}
+
 
 function updateEmail() {
   const root = document.getElementById('input-email-id').value.trim();
-  const sel = document.getElementById('input-email-domain').value;
-  let domain = sel === 'custom' ? document.getElementById('input-email-custom').value.trim() : sel;
+  const domain = document.getElementById('input-email-custom').value.trim();
   
   if (root && domain) {
     document.getElementById('input-email').value = root + '@' + domain;
   } else {
-    document.getElementById('input-phone').value = '010-';
-  document.getElementById('input-email-id').value = '';
-  document.getElementById('input-email-domain').value = 'naver.com';
-  document.getElementById('input-email-domain').style.display = 'block';
-  document.getElementById('input-email-custom').style.display = 'none';
-  document.getElementById('input-email-custom').value = '';
-  document.getElementById('input-email').value = '';
+    document.getElementById('input-email').value = '';
   }
 }
 
