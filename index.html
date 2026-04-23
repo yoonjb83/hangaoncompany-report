@@ -936,6 +936,18 @@
 
 
   #screen-question .progress-bar { margin-top: 56px; } /* Fix back button overlap */
+
+  .img-save-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 40px 20px; overflow-y: auto; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .img-save-overlay.active { opacity: 1; pointer-events: all; }
+  .img-save-title { color: #fff; font-size: 16px; margin-bottom: 8px; text-align: center; }
+  .img-save-sub { color: #aaa; font-size: 13px; margin-bottom: 20px; text-align: center; }
+  .img-save-img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  .img-save-close { margin-top: 24px; padding: 12px 32px; background: #fff; color: #000; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; }
+
 </style>
 </head>
 <body>
@@ -2053,27 +2065,39 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
 // SAVE & RESTART
 // ─────────────────────────────────────────
 function saveReport() {
-  showToast('이미지로 저장 중입니다... 잠시만 기다려주세요.');
-  const target = document.getElementById('report-content');
-  target.style.background = '#FFFFFF';
+  const btn = document.querySelector('.save-btn');
+  if(btn) { btn.innerText = '이미지 렌더링 중... (최대 10초 소요)'; btn.style.opacity = '0.7'; }
+  showToast('이미지로 변환 중입니다. 잠시만 대기해주세요.');
   
-  html2canvas(target, { 
-    scale: window.devicePixelRatio || 2, 
-    useCORS: true,
-    scrollY: 0,
-    backgroundColor: '#FFFFFF',
-    windowWidth: target.scrollWidth,
-    windowHeight: target.scrollHeight
-  }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = '한가온_진단리포트_' + (new Date().toISOString().slice(0,10).replace(/-/g,'')) + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    showToast('저장이 완료되었습니다.');
-  }).catch(e => {
-    console.error('Save error:', e);
-    showToast('저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
-  });
+  const target = document.getElementById('report-content');
+  const orgtransform = target.style.transform;
+  target.style.transform = 'none'; // fix for html2canvas offset bugs
+  
+  setTimeout(() => {
+    html2canvas(target, { 
+      scale: 1.5, // optimal for mobile memory limits
+      useCORS: true,
+      windowWidth: target.scrollWidth,
+      windowHeight: target.scrollHeight,
+      backgroundColor: '#FFFFFF',
+      onclone: (clonedDoc) => {
+        // Hide buttons in the generic cloned DOM so they aren't on the image
+        const clonedFooter = clonedDoc.querySelector('.report-footer');
+        if (clonedFooter) clonedFooter.style.display = 'none';
+      }
+    }).then(canvas => {
+      target.style.transform = orgtransform;
+      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; }
+      
+      const imgData = canvas.toDataURL('image/png');
+      document.getElementById('save-img-result').src = imgData;
+      document.getElementById('save-overlay').classList.add('active');
+    }).catch(e => {
+      console.error('Save error:', e);
+      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; }
+      showToast('메모리 부족으로 생성에 실패했습니다.');
+    });
+  }, 100);
 }
 
 function restartAll() {
@@ -2099,5 +2123,13 @@ document.getElementById('screen-report').addEventListener('transitionend', () =>
   });
 });
 </script>
+
+  <div class="img-save-overlay" id="save-overlay">
+    <div class="img-save-title">✅ 리포트 생성 완료!</div>
+    <div class="img-save-sub">아래 이미지를 꾹~ 눌러서 '사진 앱에 저장'을 선택하세요.</div>
+    <img id="save-img-result" class="img-save-img" src="" alt="Diagnosis Report">
+    <button class="img-save-close" onclick="document.getElementById('save-overlay').classList.remove('active')">닫기</button>
+  </div>
+
 </body>
 </html>
