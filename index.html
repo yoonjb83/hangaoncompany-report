@@ -1012,11 +1012,28 @@
       </div>
       <div class="form-group">
         <label>연락처<span class="required">*</span></label>
-        <input class="form-input" id="input-phone" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email').focus();}" type="tel" placeholder="010-0000-0000" maxlength="13">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input class="form-input" type="text" value="010" readonly style="width: 70px; text-align: center; padding: 0; background: rgba(255,255,255,0.05); color: var(--text-sub);">
+          <span style="color: var(--text-sub);">-</span>
+          <input class="form-input" id="input-phone-suffix" type="tel" placeholder="0000-0000" maxlength="9" style="flex: 1;" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email-id').focus();}">
+        </div>
+        <input type="hidden" id="input-phone">
       </div>
       <div class="form-group">
         <label>이메일<span class="required">*</span></label>
-        <input class="form-input" id="input-email" onkeydown="if(event.key==='Enter'){event.preventDefault();submitForm();}" type="email" placeholder="example@clinic.com">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input class="form-input" id="input-email-id" type="text" placeholder="아이디" style="flex: 1;" oninput="updateEmail()" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email-domain').focus();}">
+          <span style="color: var(--text-sub);">@</span>
+          <select class="form-input" id="input-email-domain" style="flex: 1; padding-left: 12px; padding-right: 12px; height: 50px;" onchange="handleDomainChange()">
+            <option value="naver.com">naver.com</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="hanmail.net">hanmail.net</option>
+            <option value="custom">직접 입력</option>
+          </select>
+        </div>
+        <input class="form-input" id="input-email-custom" type="text" placeholder="도메인 직접입력 (예: email.com)" style="margin-top: 8px; display: none;" oninput="updateEmail()" onkeydown="if(event.key==='Enter'){event.preventDefault();submitForm();}">
+        <input type="hidden" id="input-email">
       </div>
       <div class="consent-box">
         <div class="consent-item" onclick="toggleConsent('c1')">
@@ -1701,9 +1718,47 @@ function formatPhone(v) {
   return d.slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7,11);
 }
 
-document.getElementById('input-phone').addEventListener('input', function() {
-  this.value = formatPhone(this.value);
+document.getElementById('input-phone-suffix').addEventListener('input', function() {
+  let val = this.value.replace(/[^0-9]/g, '');
+  if (val.length > 4) val = val.slice(0,4) + '-' + val.slice(4,8);
+  this.value = val;
+  document.getElementById('input-phone').value = val.length > 0 ? '010-' + val : '';
 });
+
+function handleDomainChange() {
+  const sel = document.getElementById('input-email-domain');
+  const custom = document.getElementById('input-email-custom');
+  if (sel.value === 'custom') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+    custom.value = '';
+  }
+  updateEmail();
+}
+
+function updateEmail() {
+  const root = document.getElementById('input-email-id').value.trim();
+  const sel = document.getElementById('input-email-domain').value;
+  let domain = sel === 'custom' ? document.getElementById('input-email-custom').value.trim() : sel;
+  
+  if (root && domain) {
+    document.getElementById('input-email').value = root + '@' + domain;
+  } else {
+    document.getElementById('input-email').value = '';
+  document.getElementById('input-phone-suffix').value = '';
+  document.getElementById('input-email-id').value = '';
+  document.getElementById('input-email-domain').value = 'naver.com';
+  document.getElementById('input-email-custom').style.display = 'none';
+  document.getElementById('input-email-custom').value = '';
+  }
+}
+
+// Ensure first click focus jumps properly
+document.getElementById('input-name').onkeydown = function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('input-phone-suffix').focus(); }
+};
 
 function showToast(msg) {
   const t = document.getElementById('toast');
