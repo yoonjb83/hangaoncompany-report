@@ -948,6 +948,24 @@
   .img-save-img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
   .img-save-close { margin-top: 24px; padding: 12px 32px; background: #fff; color: #000; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; }
 
+
+  .save-btn-img, .save-btn-pdf {
+    width: 100%; padding: 14px; color: var(--deep); border: none; border-radius: var(--radius);
+    font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .save-btn-img { background: var(--gold); }
+  .save-btn-pdf { background: var(--text-main); }
+  
+  @media print {
+    body, #app { overflow: visible !important; height: auto !important; background: #fff !important; }
+    .screen { position: relative !important; opacity: 1 !important; transform: none !important; display: none; }
+    .screen.active { display: block !important; }
+    .report-footer, .back-btn, .img-save-overlay { display: none !important; }
+    * { color: #000 !important; background: transparent !important; box-shadow: none !important; text-shadow: none !important; }
+    .score-bar { background-color: #000 !important; border: 1px solid #000; }
+  }
+
 </style>
 </head>
 <body>
@@ -1934,7 +1952,8 @@ function buildReportA(p) {
   </div>
   <div class="report-footer">
     
-    <button class="save-btn" onclick="saveReport()">결과 이미지로 저장하기</button>
+    <button class="save-btn-img" onclick="saveAsImage()">이미지 저장 (사파리/크롬 권장)</button>
+    <button class="save-btn-pdf" onclick="saveAsPdf()">PDF 저장 (모든 기기 100% 호환)</button>
     <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
   </div>`;
 }
@@ -2056,7 +2075,8 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
   </div>
   <div class="report-footer">
     
-    <button class="save-btn" onclick="saveReport()">결과 이미지로 저장하기</button>
+    <button class="save-btn-img" onclick="saveAsImage()">이미지 저장 (사파리/크롬 권장)</button>
+    <button class="save-btn-pdf" onclick="saveAsPdf()">PDF 저장 (모든 기기 100% 호환)</button>
     <button class="restart-btn" onclick="restartAll()">처음으로 돌아가기</button>
   </div>`;
 }
@@ -2064,37 +2084,43 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
 // ─────────────────────────────────────────
 // SAVE & RESTART
 // ─────────────────────────────────────────
-function saveReport() {
-  const btn = document.querySelector('.save-btn');
-  if(btn) { btn.innerText = '이미지 렌더링 중... (대기)'; btn.style.opacity = '0.7'; btn.disabled = true; }
-  showToast('이미지로 변환 중입니다. 약 3~5초 소요됩니다.');
+function saveAsImage() {
+  const btn = document.querySelector('.save-btn-img');
+  if(btn) { btn.innerText = '이미지 생성 중...'; btn.style.opacity = '0.7'; btn.disabled = true; }
   
   const target = document.getElementById('report-content');
   const orgOverflow = target.style.overflow;
-  target.style.overflow = 'visible'; // Ensure full capture without cloning overhead
+  target.style.overflow = 'visible'; 
   
-  const filter = (node) => {
-    return !node.classList || !node.classList.contains('report-footer');
-  };
-
+  // Temporarily remove gradients to prevent severe rendering freezes on mobile webkit!
+  const bgs = document.querySelectorAll('.bg-pattern, .bg-grid');
+  bgs.forEach(el => el.style.display = 'none');
+  
   setTimeout(() => {
     htmlToImage.toPng(target, { 
       pixelRatio: 1.5,
       backgroundColor: '#F0F4F8',
-      filter: filter
-    }).then(function (dataUrl) {
+      filter: (node) => !node.classList || !node.classList.contains('report-footer')
+    }).then(dataUrl => {
       target.style.overflow = orgOverflow;
-      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
+      bgs.forEach(el => el.style.display = 'block');
+      if(btn) { btn.innerText = '이미지로 저장'; btn.style.opacity = '1'; btn.disabled = false; }
       
       document.getElementById('save-img-result').src = dataUrl;
       document.getElementById('save-overlay').classList.add('active');
-    }).catch(function (error) {
+    }).catch(err => {
       target.style.overflow = orgOverflow;
-      console.error('Save error:', error);
-      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
-      showToast('이미지 변환 중 오류가 발생했습니다.');
+      bgs.forEach(el => el.style.display = 'block');
+      console.error(err);
+      if(btn) { btn.innerText = '이미지로 저장 (오류남)'; btn.style.opacity = '1'; btn.disabled = false; }
+      showToast('이미지 저장 불가 브라우저입니다. PDF 저장을 이용해주세요.');
     });
-  }, 300);
+  }, 100);
+}
+
+function saveAsPdf() {
+  // Mobile devices use native OS print dialogue to easily save as PDF
+  window.print();
 }
 
 function restartAll() {
