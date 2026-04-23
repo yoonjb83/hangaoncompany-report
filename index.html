@@ -2066,54 +2066,33 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
 // ─────────────────────────────────────────
 function saveReport() {
   const btn = document.querySelector('.save-btn');
-  if(btn) { btn.innerText = '이미지 렌더링 중... (최대 10초 소요)'; btn.style.opacity = '0.7'; btn.disabled = true; }
-  showToast('이미지로 변환 중입니다. 잠시만 기다려주세요.');
+  if(btn) { btn.innerText = '이미지 렌더링 중... (대기)'; btn.style.opacity = '0.7'; btn.disabled = true; }
+  showToast('이미지로 변환 중입니다. 약 3~5초 소요됩니다.');
   
-  const original = document.getElementById('report-content');
+  const target = document.getElementById('report-content');
+  const orgOverflow = target.style.overflow;
+  target.style.overflow = 'visible'; // Ensure full capture without cloning overhead
   
-  // Create an explicit off-screen clone to strip all 'overflow: auto' scroll bugs
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'absolute';
-  wrapper.style.top = '-9999px';
-  wrapper.style.left = '0';
-  wrapper.style.width = original.clientWidth + 'px';
-  wrapper.style.backgroundColor = '#F0F4F8'; // match original bg
-  wrapper.style.padding = '24px'; // match .content padding
-  wrapper.style.boxSizing = 'border-box';
-  wrapper.style.zIndex = '-999';
-  
-  const clone = original.cloneNode(true);
-  clone.style.overflow = 'visible';
-  clone.style.height = 'auto';
-  clone.style.maxHeight = 'none';
-  clone.style.transform = 'none';
-  clone.style.padding = '0'; // wrapper handles padding
-
-  // Remove footer buttons from clone
-  const clonedFooter = clone.querySelector('.report-footer');
-  if (clonedFooter) clonedFooter.remove();
-
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
+  const filter = (node) => {
+    return !node.classList || !node.classList.contains('report-footer');
+  };
 
   setTimeout(() => {
-    html2canvas(wrapper, { 
-      scale: 1.5,
-      useCORS: true,
+    htmlToImage.toPng(target, { 
+      pixelRatio: 1.5,
       backgroundColor: '#F0F4F8',
-      logging: false
-    }).then(canvas => {
-      document.body.removeChild(wrapper);
+      filter: filter
+    }).then(function (dataUrl) {
+      target.style.overflow = orgOverflow;
       if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
       
-      const imgData = canvas.toDataURL('image/png');
-      document.getElementById('save-img-result').src = imgData;
+      document.getElementById('save-img-result').src = dataUrl;
       document.getElementById('save-overlay').classList.add('active');
-    }).catch(e => {
-      console.error('Save error:', e);
-      document.body.removeChild(wrapper);
+    }).catch(function (error) {
+      target.style.overflow = orgOverflow;
+      console.error('Save error:', error);
       if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
-      showToast('메모리 부족으로 생성에 실패했습니다.');
+      showToast('이미지 변환 중 오류가 발생했습니다.');
     });
   }, 300);
 }
