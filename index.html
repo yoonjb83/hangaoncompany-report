@@ -1008,7 +1008,7 @@
     <div class="form-body">
       <div class="form-group">
         <label>성함<span class="required">*</span></label>
-        <input class="form-input" id="input-name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone').focus();}" type="text" placeholder="홍길동" maxlength="20">
+        <input class="form-input" id="input-name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone-suffix').focus();}" type="text" placeholder="대표원장 성함" maxlength="20" lang="ko" inputmode="text" autocomplete="name">
       </div>
       <div class="form-group">
         <label>연락처<span class="required">*</span></label>
@@ -1729,9 +1729,12 @@ function formatPhone(el) {
 
 
 
+
 function updateEmail() {
   const root = document.getElementById('input-email-id').value.trim();
-  const domain = document.getElementById('input-email-custom').value.trim();
+  const sel = document.getElementById('input-email-domain').value;
+  const custom = document.getElementById('input-email-custom').value.trim();
+  const domain = sel === 'custom' ? custom : sel;
   
   if (root && domain) {
     document.getElementById('input-email').value = root + '@' + domain;
@@ -1739,6 +1742,23 @@ function updateEmail() {
     document.getElementById('input-email').value = '';
   }
 }
+
+function handleDomainChange() {
+  const sel = document.getElementById('input-email-domain');
+  if (sel.value === 'custom') {
+    document.getElementById('wrapper-custom-domain').style.display = 'block';
+    document.getElementById('input-email-custom').value = '';
+    document.getElementById('input-email-custom').focus();
+  }
+  updateEmail();
+}
+
+function resetDomain() {
+  document.getElementById('wrapper-custom-domain').style.display = 'none';
+  document.getElementById('input-email-domain').value = 'naver.com';
+  updateEmail();
+}
+
 
 // Ensure first click focus jumps properly
 document.getElementById('input-name').onkeydown = function(e) {
