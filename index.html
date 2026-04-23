@@ -2066,38 +2066,56 @@ function buildReportB(avgScores, weakTwo, eff, rx) {
 // ─────────────────────────────────────────
 function saveReport() {
   const btn = document.querySelector('.save-btn');
-  if(btn) { btn.innerText = '이미지 렌더링 중... (최대 10초 소요)'; btn.style.opacity = '0.7'; }
-  showToast('이미지로 변환 중입니다. 잠시만 대기해주세요.');
+  if(btn) { btn.innerText = '이미지 렌더링 중... (최대 10초 소요)'; btn.style.opacity = '0.7'; btn.disabled = true; }
+  showToast('이미지로 변환 중입니다. 잠시만 기다려주세요.');
   
-  const target = document.getElementById('report-content');
-  const orgtransform = target.style.transform;
-  target.style.transform = 'none'; // fix for html2canvas offset bugs
+  const original = document.getElementById('report-content');
   
+  // Create an explicit off-screen clone to strip all 'overflow: auto' scroll bugs
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'absolute';
+  wrapper.style.top = '-9999px';
+  wrapper.style.left = '0';
+  wrapper.style.width = original.clientWidth + 'px';
+  wrapper.style.backgroundColor = '#F0F4F8'; // match original bg
+  wrapper.style.padding = '24px'; // match .content padding
+  wrapper.style.boxSizing = 'border-box';
+  wrapper.style.zIndex = '-999';
+  
+  const clone = original.cloneNode(true);
+  clone.style.overflow = 'visible';
+  clone.style.height = 'auto';
+  clone.style.maxHeight = 'none';
+  clone.style.transform = 'none';
+  clone.style.padding = '0'; // wrapper handles padding
+
+  // Remove footer buttons from clone
+  const clonedFooter = clone.querySelector('.report-footer');
+  if (clonedFooter) clonedFooter.remove();
+
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
   setTimeout(() => {
-    html2canvas(target, { 
-      scale: 1.5, // optimal for mobile memory limits
+    html2canvas(wrapper, { 
+      scale: 1.5,
       useCORS: true,
-      windowWidth: target.scrollWidth,
-      windowHeight: target.scrollHeight,
-      backgroundColor: '#FFFFFF',
-      onclone: (clonedDoc) => {
-        // Hide buttons in the generic cloned DOM so they aren't on the image
-        const clonedFooter = clonedDoc.querySelector('.report-footer');
-        if (clonedFooter) clonedFooter.style.display = 'none';
-      }
+      backgroundColor: '#F0F4F8',
+      logging: false
     }).then(canvas => {
-      target.style.transform = orgtransform;
-      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; }
+      document.body.removeChild(wrapper);
+      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
       
       const imgData = canvas.toDataURL('image/png');
       document.getElementById('save-img-result').src = imgData;
       document.getElementById('save-overlay').classList.add('active');
     }).catch(e => {
       console.error('Save error:', e);
-      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; }
+      document.body.removeChild(wrapper);
+      if(btn) { btn.innerText = '결과 이미지로 저장하기'; btn.style.opacity = '1'; btn.disabled = false; }
       showToast('메모리 부족으로 생성에 실패했습니다.');
     });
-  }, 100);
+  }, 300);
 }
 
 function restartAll() {
