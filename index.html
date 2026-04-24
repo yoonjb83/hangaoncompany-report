@@ -1008,7 +1008,7 @@
     <div class="form-body">
       <div class="form-group">
         <label>성함<span class="required">*</span></label>
-        <input class="form-input" id="input-name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone-suffix').focus();}" type="text" placeholder="홍길동" maxlength="20" lang="ko" inputmode="text" autocomplete="name">
+        <input class="form-input" id="input-name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-phone').focus();}" type="text" placeholder="홍길동" maxlength="20">
       </div>
       <div class="form-group">
         <label>연락처<span class="required">*</span></label>
@@ -1017,7 +1017,7 @@
       <div class="form-group">
         <label>이메일<span class="required">*</span></label>
         <div style="display: flex; gap: 8px; align-items: center;">
-          <input class="form-input" id="input-email-id" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="아이디(영문)" style="flex: 1; ime-mode: disabled;" oninput="updateEmail()" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email-domain').focus();}">
+          <input class="form-input" id="input-email-id" type="text" placeholder="아이디" style="flex: 1;" oninput="updateEmail()" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('input-email-domain').focus();}">
           <span style="color: var(--text-sub);">@</span>
           <select class="form-input" id="input-email-domain" style="flex: 1; padding: 14px 12px;" onchange="handleDomainChange()">
             <option value="naver.com">naver.com</option>
@@ -1729,21 +1729,16 @@ function formatPhone(el) {
 
 
 
-
 function updateEmail() {
   const root = document.getElementById('input-email-id').value.trim();
-  const domain = document.getElementById('input-email-domain').value;
+  const domain = document.getElementById('input-email-custom').value.trim();
+  
   if (root && domain) {
     document.getElementById('input-email').value = root + '@' + domain;
   } else {
     document.getElementById('input-email').value = '';
   }
 }
-
-
-
-
-
 
 // Ensure first click focus jumps properly
 document.getElementById('input-name').onkeydown = function(e) {
